@@ -13,7 +13,7 @@ export default function VacationReportsPage() {
 
   return (
     <main className="suite-page">
-      <VacationsHeader eyebrow={copy.reportsEyebrow} title={copy.reportsTitle} description={copy.reportsDescription} badges={[{ label: copy.liabilityMock, value: liability, tone: "info" }]} />
+      <VacationsHeader eyebrow={copy.reportsEyebrow} title={copy.reportsTitle} description={copy.reportsDescription} badges={[{ label: copy.liabilityLabel, value: liability, tone: "info" }]} />
       <section className="suite-stats">
         <article className="suite-stat"><span>Conflictos</span><strong>{riskSummary.conflicts}</strong></article>
         <article className="suite-stat"><span>Pendientes</span><strong>{riskSummary.pendingApprovals}</strong></article>
