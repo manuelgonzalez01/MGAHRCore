@@ -6,6 +6,8 @@ import ModuleConnectionsPanel from "../../shared/ModuleConnectionsPanel";
 import "../dashboard.css";
 import dashboardService from "../services/dashboard.service";
 
+const DASHBOARD_PAGE_TIMEOUT_MS = 8000;
+
 function toneClass(value) {
   return value === "healthy" || value === "strong"
     ? value
@@ -18,27 +20,36 @@ export default function DashboardPage() {
   const { language } = useI18n();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
     let ignore = false;
+    const timeoutId = window.setTimeout(() => {
+      if (!ignore) {
+        setError("El dashboard esta tardando demasiado en responder. Vuelve a intentarlo.");
+      }
+    }, DASHBOARD_PAGE_TIMEOUT_MS);
 
     dashboardService.getDashboardOverview()
       .then((response) => {
         if (!ignore) {
+          window.clearTimeout(timeoutId);
           setData(response);
           setError("");
         }
       })
       .catch(() => {
         if (!ignore) {
+          window.clearTimeout(timeoutId);
           setError("No pudimos consolidar el dashboard ejecutivo.");
         }
       });
 
     return () => {
       ignore = true;
+      window.clearTimeout(timeoutId);
     };
-  }, []);
+  }, [reloadKey]);
 
   if (!data && !error) {
     return (
@@ -62,6 +73,16 @@ export default function DashboardPage() {
           <div className="dashboard-hero__head">
             <h1>No pudimos cargar el dashboard</h1>
             <p>{error}</p>
+            <div className="dashboard-hero__actions">
+              <button type="button" className="dashboard-link dashboard-link--button" onClick={() => {
+                setData(null);
+                setError("");
+                setReloadKey((current) => current + 1);
+              }}
+              >
+                Reintentar
+              </button>
+            </div>
           </div>
         </section>
       </main>
