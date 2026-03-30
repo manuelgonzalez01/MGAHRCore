@@ -28,7 +28,7 @@ export default function Sidebar() {
     return activeGroup?.key || null;
   }, [pathname]);
 
-  const expandedMenu = isDesktop ? openMenu : openMenu || activeGroupKey;
+  const expandedMenu = openMenu || activeGroupKey;
 
   useEffect(() => {
     function handleResize() {
@@ -106,26 +106,29 @@ export default function Sidebar() {
                     expandedMenu === item.key || isGroupActive ? " is-active" : ""
                   }`}
                 >
-                  <NavLink
-                    to={item.path}
-                    className="sidebar-trigger__label"
-                    onClick={closeMobileMenu}
-                  >
-                    {t(item.labelKey)}
-                  </NavLink>
-                  <button
-                    type="button"
-                    className="sidebar-trigger__toggle"
-                    aria-expanded={expandedMenu === item.key ? "true" : "false"}
-                    aria-label={
-                      expandedMenu === item.key
-                        ? t("Ocultar vistas del modulo", "Collapse module views")
-                        : t("Mostrar vistas del modulo", "Expand module views")
-                    }
-                    onClick={() => toggleMenu(item.key)}
-                  >
-                    {expandedMenu === item.key ? "-" : "+"}
-                  </button>
+                  {isDesktop ? (
+                    <NavLink
+                      to={item.path}
+                      className="sidebar-trigger__label"
+                      onClick={closeMobileMenu}
+                    >
+                      {t(item.labelKey)}
+                    </NavLink>
+                  ) : (
+                    <button
+                      type="button"
+                      className="sidebar-trigger__label sidebar-trigger__label--button"
+                      aria-expanded={expandedMenu === item.key ? "true" : "false"}
+                      aria-label={
+                        expandedMenu === item.key
+                          ? t("Ocultar vistas del modulo", "Collapse module views")
+                          : t("Mostrar vistas del modulo", "Expand module views")
+                      }
+                      onClick={() => toggleMenu(item.key)}
+                    >
+                      {t(item.labelKey)}
+                    </button>
+                  )}
                 </div>
               ) : (
                 <NavLink
