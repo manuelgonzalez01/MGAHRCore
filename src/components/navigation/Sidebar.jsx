@@ -59,31 +59,15 @@ export default function Sidebar() {
     }
   }
 
-  const sidebarEyebrow =
-    language === "en" ? "Corporate operations" : "Operaciones corporativas";
-
-  const sidebarContext = user?.canAccessAllCompanies
-    ? activeCompanyId
-      ? language === "en"
-        ? "Platform administration focused on the selected company."
-        : "Administracion de plataforma enfocada en la compania seleccionada."
-      : language === "en"
-        ? "Central administration with visibility across the full organization."
-        : "Administracion central con visibilidad sobre toda la organizacion."
-    : user?.company
-      ? language === "en"
-        ? `${user.company} operational workspace.`
-        : `Workspace operativo de ${user.company}.`
-      : language === "en"
-        ? "Corporate workspace ready for daily operations."
-        : "Workspace corporativo listo para la operacion diaria.";
+  const activeCompanyName =
+    user?.companies?.find((company) => company.id === activeCompanyId)?.name
+    || user?.company
+    || (language === "en" ? "Corporate workspace" : "Workspace corporativo");
 
   return (
     <div className="sidebar">
       <div className="sidebar-brand">
-        <span className="sidebar-brand__eyebrow">{sidebarEyebrow}</span>
-        <h2>MGAHRCore</h2>
-        <p>{sidebarContext}</p>
+        <span className="sidebar-brand__company">{activeCompanyName}</span>
       </div>
 
       <button
