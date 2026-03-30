@@ -9,8 +9,19 @@ import { getPersonnelActionsDashboard } from "../../personnel-actions/services/p
 import { getInsuranceDashboard } from "../../Insurance/services/insurance.service";
 import { getOccupationalHealthDashboard } from "../../occupational-health/services/occupationalHealth.service";
 
+const DASHBOARD_SOURCE_TIMEOUT_MS = 6000;
+
 function resolveSettled(result, fallback) {
   return result.status === "fulfilled" ? result.value : fallback;
+}
+
+function withTimeout(promise, label, timeoutMs = DASHBOARD_SOURCE_TIMEOUT_MS) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error(`${label}_timeout`)), timeoutMs);
+    }),
+  ]);
 }
 
 function buildRiskRegister({ employees, administration, vacations, insurance, development }) {
@@ -134,16 +145,16 @@ export async function getDashboardOverview() {
     insurance,
     occupationalHealth,
   ] = await Promise.allSettled([
-    recruitmentService.getRecruitmentDashboardData(),
-    administrationService.getAdministrationCore(),
-    employeesService.getEmployeesDashboard(),
-    vacationsService.getVacationsDashboard(),
-    getDevelopmentDashboard(),
-    getReportsDashboard(),
-    getSelfServiceDashboard(),
-    getPersonnelActionsDashboard(),
-    getInsuranceDashboard(),
-    getOccupationalHealthDashboard(),
+    withTimeout(recruitmentService.getRecruitmentDashboardData(), "recruitment"),
+    withTimeout(administrationService.getAdministrationCore(), "administration"),
+    withTimeout(employeesService.getEmployeesDashboard(), "employees"),
+    withTimeout(vacationsService.getVacationsDashboard(), "vacations"),
+    withTimeout(getDevelopmentDashboard(), "development"),
+    withTimeout(getReportsDashboard(), "reports"),
+    withTimeout(getSelfServiceDashboard(), "self_service"),
+    withTimeout(getPersonnelActionsDashboard(), "personnel_actions"),
+    withTimeout(getInsuranceDashboard(), "insurance"),
+    withTimeout(getOccupationalHealthDashboard(), "occupational_health"),
   ]);
   const recruitmentData = resolveSettled(recruitment, {
     jobRequests: [],
