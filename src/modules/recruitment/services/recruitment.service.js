@@ -528,6 +528,13 @@ export const recruitmentCopy = {
       openProfile: "Abrir",
       sendReminder: "Recordar",
     },
+    filters: {
+      search: "Busqueda",
+      searchPlaceholder: "Cargo, candidato, manager o contacto",
+      status: "Estado",
+      stage: "Etapa",
+      all: "Todos",
+    },
     forms: {
       title: "Titulo",
       requestTitle: "Nueva requisicion",
@@ -676,6 +683,13 @@ export const recruitmentCopy = {
       reviewEvaluation: "Log evaluation",
       openProfile: "Open",
       sendReminder: "Remind",
+    },
+    filters: {
+      search: "Search",
+      searchPlaceholder: "Role, candidate, manager, or contact",
+      status: "Status",
+      stage: "Stage",
+      all: "All",
     },
     forms: {
       title: "Title",
