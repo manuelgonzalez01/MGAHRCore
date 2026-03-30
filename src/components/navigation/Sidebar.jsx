@@ -11,6 +11,7 @@ export default function Sidebar() {
   const { t, language } = useI18n();
   const user = useAuthStore((state) => state.user);
   const activeCompanyId = useAuthStore((state) => state.activeCompanyId);
+  const setActiveCompany = useAuthStore((state) => state.setActiveCompany);
   const logout = useAuthStore((state) => state.logout);
   const [openMenu, setOpenMenu] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -28,7 +29,7 @@ export default function Sidebar() {
     return activeGroup?.key || null;
   }, [pathname]);
 
-  const expandedMenu = openMenu || activeGroupKey;
+  const expandedMenu = isDesktop ? openMenu : openMenu || activeGroupKey;
 
   useEffect(() => {
     function handleResize() {
@@ -64,10 +65,28 @@ export default function Sidebar() {
     || user?.company
     || (language === "en" ? "Corporate workspace" : "Workspace corporativo");
 
+  const availableCompanies = user?.companies || [];
+
   return (
     <div className="sidebar">
       <div className="sidebar-brand">
-        <span className="sidebar-brand__company">{activeCompanyName}</span>
+        {user?.canAccessAllCompanies && availableCompanies.length > 1 ? (
+          <label className="sidebar-company-switcher">
+            <select
+              value={activeCompanyId || availableCompanies[0]?.id || ""}
+              onChange={(event) => setActiveCompany(event.target.value)}
+              aria-label={language === "en" ? "Active company" : "Compania activa"}
+            >
+              {availableCompanies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : (
+          <span className="sidebar-brand__company">{activeCompanyName}</span>
+        )}
       </div>
 
       <button

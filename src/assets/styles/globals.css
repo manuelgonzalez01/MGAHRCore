@@ -883,10 +883,38 @@
 .sidebar-brand__company {
   display: inline-block;
   color: #f8fbff;
-  font-size: 1.1rem;
+  font-size: 1.18rem;
   font-weight: 800;
   line-height: 1;
   white-space: nowrap;
+}
+
+.sidebar-company-switcher {
+  display: inline-flex;
+  align-items: center;
+  max-width: 220px;
+  padding: 0.1rem 0;
+}
+
+.sidebar-company-switcher select {
+  max-width: 220px;
+  border: 0;
+  background: transparent;
+  color: #f8fbff;
+  font-size: 1.18rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+
+.sidebar-company-switcher select:focus {
+  outline: none;
+}
+
+.sidebar-company-switcher option {
+  color: #132238;
 }
 
 .sidebar-mobile-toggle {
