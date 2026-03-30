@@ -1,14 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import useI18n from "../../app/providers/useI18n";
 import useAuthStore from "../../app/store/authStore";
+import authService from "../../services/auth/auth.service";
 import { menuConfig } from "../../config/menu.config";
 
 export default function Sidebar() {
   const { pathname } = useLocation();
-  const { t } = useI18n();
+  const navigate = useNavigate();
+  const { t, language } = useI18n();
   const user = useAuthStore((state) => state.user);
   const activeCompanyId = useAuthStore((state) => state.activeCompanyId);
+  const logout = useAuthStore((state) => state.logout);
   const [openMenu, setOpenMenu] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() =>
@@ -46,16 +49,41 @@ export default function Sidebar() {
     setIsMobileMenuOpen(false);
   }
 
+  async function handleLogout() {
+    try {
+      await authService.logoutUser();
+    } finally {
+      logout();
+      closeMobileMenu();
+      navigate("/login");
+    }
+  }
+
+  const sidebarEyebrow =
+    language === "en" ? "Corporate operations" : "Operaciones corporativas";
+
+  const sidebarContext = user?.canAccessAllCompanies
+    ? activeCompanyId
+      ? language === "en"
+        ? "Platform administration focused on the selected company."
+        : "Administracion de plataforma enfocada en la compania seleccionada."
+      : language === "en"
+        ? "Central administration with visibility across the full organization."
+        : "Administracion central con visibilidad sobre toda la organizacion."
+    : user?.company
+      ? language === "en"
+        ? `${user.company} operational workspace.`
+        : `Workspace operativo de ${user.company}.`
+      : language === "en"
+        ? "Corporate workspace ready for daily operations."
+        : "Workspace corporativo listo para la operacion diaria.";
+
   return (
     <div className="sidebar">
       <div className="sidebar-brand">
-        <span className="sidebar-brand__eyebrow">Enterprise HR OS</span>
+        <span className="sidebar-brand__eyebrow">{sidebarEyebrow}</span>
         <h2>MGAHRCore</h2>
-        <p>
-          {user?.canAccessAllCompanies
-            ? `Global control${activeCompanyId ? " | company mode" : ""}`
-            : user?.company || "Corporate workspace"}
-        </p>
+        <p>{sidebarContext}</p>
       </div>
 
       <button
@@ -155,6 +183,14 @@ export default function Sidebar() {
             </div>
           );
         })}
+
+        <button
+          type="button"
+          className="sidebar-link sidebar-link--action"
+          onClick={handleLogout}
+        >
+          {language === "es" ? "Cerrar sesion" : "Sign out"}
+        </button>
       </nav>
     </div>
   );

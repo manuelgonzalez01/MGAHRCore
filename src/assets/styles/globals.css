@@ -859,7 +859,7 @@
   grid-template-columns: minmax(0, 1fr);
   min-height: 100vh;
   padding: 1.2rem;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 
 .sidebar {
@@ -922,9 +922,19 @@
   font-weight: 700;
 }
 
+.sidebar-link--action {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+}
+
 .sidebar-link:hover,
 .sidebar-link.is-active {
   background: rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-link--action:hover {
+  background: rgba(255, 255, 255, 0.14);
 }
 
 .sidebar-trigger {
@@ -983,13 +993,6 @@
 .sidebar-sublink.is-active {
   background: rgba(37, 99, 235, 0.18);
   color: #f8fbff;
-}
-
-.app-topbar {
-  padding: 0.8rem 1rem;
-  border-radius: 28px;
-  background: rgba(255, 255, 255, 0.76);
-  backdrop-filter: blur(18px);
 }
 
 .app-content {
@@ -1174,8 +1177,7 @@
   .landing-hero,
   .landing-section,
   .landing-footer,
-  .sidebar,
-  .app-topbar {
+  .sidebar {
     padding: 1.35rem;
     border-radius: 24px;
   }
