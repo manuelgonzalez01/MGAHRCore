@@ -48,10 +48,6 @@ export default function AppProviders({ children }) {
                 : "No fue posible inicializar la plataforma."),
           );
         }
-      } finally {
-        if (!ignore) {
-          setReady(true);
-        }
       }
 
       try {
@@ -67,6 +63,10 @@ export default function AppProviders({ children }) {
                 ? "The session could not be synchronized."
                 : "No fue posible sincronizar la sesion."),
           );
+        }
+      } finally {
+        if (!ignore) {
+          setReady(true);
         }
       }
     }
