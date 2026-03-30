@@ -98,106 +98,113 @@ export default function Sidebar() {
         {t("common.menu")}
       </button>
 
-      <nav className={`sidebar-nav${isMobileMenuOpen ? " is-open" : ""}`}>
-        {menuConfig.map((item) => {
-          const isGroupActive =
-            !!item.children &&
-            (pathname === item.path || pathname.startsWith(`${item.path}/`));
-
-          return (
-            <div
-              key={item.key}
-              className="sidebar-group"
-              onMouseEnter={() => {
-                if (isDesktop && item.children) {
-                  setOpenMenu(item.key);
-                }
-              }}
-              onMouseLeave={() => {
-                if (isDesktop && item.children) {
-                  setOpenMenu(null);
-                }
-              }}
-            >
-              {item.children ? (
-                <div
-                  className={`sidebar-link sidebar-trigger${
-                    expandedMenu === item.key || isGroupActive ? " is-active" : ""
-                  }`}
-                >
-                  {isDesktop ? (
-                    <NavLink
-                      to={item.path}
-                      className="sidebar-trigger__label"
-                      onClick={closeMobileMenu}
-                    >
-                      {t(item.labelKey)}
-                    </NavLink>
-                  ) : (
-                    <button
-                      type="button"
-                      className="sidebar-trigger__label sidebar-trigger__label--button"
-                      aria-expanded={expandedMenu === item.key ? "true" : "false"}
-                      aria-label={
-                        expandedMenu === item.key
-                          ? t("Ocultar vistas del modulo", "Collapse module views")
-                          : t("Mostrar vistas del modulo", "Expand module views")
-                      }
-                      onClick={() => toggleMenu(item.key)}
-                    >
-                      {t(item.labelKey)}
-                    </button>
-                  )}
-                </div>
-              ) : (
-                <NavLink
-                  to={item.path}
-                  className={() =>
-                    `sidebar-link${
-                      pathname === item.path || pathname.startsWith(`${item.path}/`)
-                        ? " is-active"
-                        : ""
-                    }`
-                  }
-                  onClick={closeMobileMenu}
-                >
-                  {t(item.labelKey)}
-                </NavLink>
-              )}
-
-              {item.children && expandedMenu === item.key ? (
-                <div className="sidebar-submenu">
-                  {item.children.map((child) => (
-                    <NavLink
-                      key={child.key}
-                      to={child.path}
-                      className={({ isActive }) =>
-                        `sidebar-sublink${isActive ? " is-active" : ""}`
-                      }
-                      onClick={() => {
-                        closeMobileMenu();
-                        if (isDesktop) {
-                          setOpenMenu(null);
-                        }
-                      }}
-                    >
-                      {t(child.labelKey)}
-                    </NavLink>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          );
-        })}
-
-        <button
-          type="button"
-          className="sidebar-link sidebar-link--action"
-          onClick={handleLogout}
+      <div className={`sidebar-main${isMobileMenuOpen ? " is-open" : ""}`}>
+        <nav
+          className={`sidebar-nav${isMobileMenuOpen ? " is-open" : ""}`}
+          aria-label={language === "en" ? "Primary navigation" : "Navegacion principal"}
         >
-          {language === "es" ? "Cerrar sesion" : "Sign out"}
-        </button>
-      </nav>
+          {menuConfig.map((item) => {
+            const isGroupActive =
+              !!item.children &&
+              (pathname === item.path || pathname.startsWith(`${item.path}/`));
+
+            return (
+              <div
+                key={item.key}
+                className="sidebar-group"
+                onMouseEnter={() => {
+                  if (isDesktop && item.children) {
+                    setOpenMenu(item.key);
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (isDesktop && item.children) {
+                    setOpenMenu(null);
+                  }
+                }}
+              >
+                {item.children ? (
+                  <div
+                    className={`sidebar-link sidebar-trigger${
+                      expandedMenu === item.key || isGroupActive ? " is-active" : ""
+                    }`}
+                  >
+                    {isDesktop ? (
+                      <NavLink
+                        to={item.path}
+                        className="sidebar-trigger__label"
+                        onClick={closeMobileMenu}
+                      >
+                        {t(item.labelKey)}
+                      </NavLink>
+                    ) : (
+                      <button
+                        type="button"
+                        className="sidebar-trigger__label sidebar-trigger__label--button"
+                        aria-expanded={expandedMenu === item.key ? "true" : "false"}
+                        aria-label={
+                          expandedMenu === item.key
+                            ? t("Ocultar vistas del modulo", "Collapse module views")
+                            : t("Mostrar vistas del modulo", "Expand module views")
+                        }
+                        onClick={() => toggleMenu(item.key)}
+                      >
+                        {t(item.labelKey)}
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <NavLink
+                    to={item.path}
+                    className={() =>
+                      `sidebar-link${
+                        pathname === item.path || pathname.startsWith(`${item.path}/`)
+                          ? " is-active"
+                          : ""
+                      }`
+                    }
+                    onClick={closeMobileMenu}
+                  >
+                    {t(item.labelKey)}
+                  </NavLink>
+                )}
+
+                {item.children && expandedMenu === item.key ? (
+                  <div className="sidebar-submenu">
+                    {item.children.map((child) => (
+                      <NavLink
+                        key={child.key}
+                        to={child.path}
+                        className={({ isActive }) =>
+                          `sidebar-sublink${isActive ? " is-active" : ""}`
+                        }
+                        onClick={() => {
+                          closeMobileMenu();
+                          if (isDesktop) {
+                            setOpenMenu(null);
+                          }
+                        }}
+                      >
+                        {t(child.labelKey)}
+                      </NavLink>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </nav>
+
+        <div className="sidebar-actions">
+          <button
+            type="button"
+            className="sidebar-link sidebar-link--action"
+            onClick={handleLogout}
+          >
+            {language === "es" ? "Cerrar sesion" : "Sign out"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
