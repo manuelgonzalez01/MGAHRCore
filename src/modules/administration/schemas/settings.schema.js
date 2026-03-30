@@ -1,0 +1,22 @@
+export const settingsSchema = {
+  language: "es",
+  timezone: "America/La_Paz",
+  dateFormat: "DD/MM/YYYY",
+  timeFormat: "24h",
+  baseCurrency: "BOB",
+  notificationsDigest: "daily",
+  maintenanceMode: false,
+  maintenanceModeScope: "off",
+  maintenanceModules: [],
+  readOnlyMode: false,
+  logsEnabled: true,
+  companyScope: "global",
+  companyOverrides: [],
+  featureFlags: [],
+  security: {
+    sessionTimeoutMinutes: 30,
+    passwordPolicy: "strong",
+    failedAttempts: 5,
+    userLockoutMinutes: 30,
+  },
+};

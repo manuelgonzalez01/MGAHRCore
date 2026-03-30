@@ -1,0 +1,178 @@
+.self-service-page .suite-card,
+.self-service-page .suite-hero {
+  border-radius: 1.25rem;
+}
+
+.suite-hero--self-service {
+  background: linear-gradient(135deg, #f8fbff 0%, #eef5ff 100%);
+}
+
+.self-service-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.self-service-employee-panel {
+  display: grid;
+  gap: 1rem;
+}
+
+.self-service-employee-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.self-service-employee-meta article,
+.self-service-employee-selector {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.self-service-employee-selector select,
+.self-service-form-grid input,
+.self-service-form-grid select,
+.self-service-form-grid textarea {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #cbd9ee;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.self-service-quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.9rem;
+}
+
+.self-service-quick-action {
+  padding: 1rem;
+  border: 1px solid #d9e3f0;
+  border-radius: 1rem;
+  color: #0f2b5b;
+  text-decoration: none;
+  background: #fff;
+}
+
+.self-service-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.self-service-table th,
+.self-service-table td {
+  padding: 0.9rem 0.75rem;
+  border-bottom: 1px solid #d9e3f0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.self-service-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2b5cff;
+}
+
+.self-service-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.self-service-badge--submitted,
+.self-service-badge--pending_manager_review,
+.self-service-badge--pending_hr_review,
+.self-service-badge--scheduled {
+  background: #fff4ce;
+  color: #9a6700;
+}
+
+.self-service-badge--approved,
+.self-service-badge--consumed {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.self-service-badge--rejected,
+.self-service-badge--cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.self-service-badge--returned_for_changes {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.self-service-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.self-service-form-grid label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.self-service-form-grid span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2b5cff;
+}
+
+.self-service-form-grid textarea {
+  resize: vertical;
+}
+
+.self-service-form-span-2 {
+  grid-column: span 2;
+}
+
+.self-service-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.self-service-feedback {
+  margin: 0;
+  font-weight: 600;
+  color: #0f2b5b;
+}
+
+.self-service-empty-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.self-service-timeline {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.self-service-timeline-item {
+  padding: 0.9rem 1rem;
+  border: 1px solid #d9e3f0;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.self-service-page .suite-list-item {
+  cursor: pointer;
+}
+
+@media (max-width: 960px) {
+  .self-service-form-span-2 {
+    grid-column: span 1;
+  }
+}

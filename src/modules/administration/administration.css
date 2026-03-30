@@ -1,0 +1,1747 @@
+.administration-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.administration-hero,
+.administration-panel,
+.administration-table-shell,
+.administration-empty,
+.administration-stat-card,
+.administration-action-card,
+.administration-flow-card,
+.administration-audit-item,
+.administration-health-card {
+  background: #ffffff;
+  border: 1px solid #dbe4f0;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.07);
+}
+
+.administration-hero {
+  padding: 1.6rem;
+  background:
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.12), transparent 28%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.14), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-title-row,
+.administration-panel-head,
+.administration-inline-actions,
+.administration-health-row,
+.administration-language-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.administration-eyebrow {
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.administration-title-row h1,
+.administration-panel-head h2,
+.administration-language-head h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.administration-muted {
+  color: #475569;
+  line-height: 1.6;
+}
+
+.administration-grid,
+.administration-stats-grid,
+.administration-kpi-grid,
+.administration-quick-grid,
+.administration-link-grid,
+.administration-side-stack,
+.administration-list,
+.administration-mini-grid,
+.administration-filter-grid,
+.administration-form-grid,
+.administration-matrix,
+.administration-settings-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-grid {
+  grid-template-columns: minmax(0, 1.4fr) minmax(320px, 0.9fr);
+  align-items: start;
+}
+
+.administration-stats-grid,
+.administration-kpi-grid,
+.administration-quick-grid,
+.administration-link-grid,
+.administration-settings-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.administration-mini-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.administration-panel {
+  padding: 1.25rem;
+}
+
+.administration-stat-card,
+.administration-action-card,
+.administration-flow-card,
+.administration-list-item,
+.administration-health-card,
+.administration-link-card {
+  padding: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.administration-stat-card span,
+.administration-flow-card span,
+.administration-list-item span,
+.administration-health-card span {
+  display: block;
+  color: #64748b;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.administration-stat-card strong,
+.administration-flow-card strong,
+.administration-list-item strong,
+.administration-health-card strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: #0f172a;
+  font-size: 1.15rem;
+}
+
+.administration-action-card {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.administration-link-card {
+  display: grid;
+  gap: 0.5rem;
+  text-decoration: none;
+  transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+}
+
+.administration-link-card strong {
+  color: #0f172a;
+  font-size: 0.95rem;
+}
+
+.administration-link-card:hover {
+  transform: translateY(-1px);
+  border-color: #cbd5e1;
+  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.06);
+}
+
+.administration-action-card button,
+.administration-primary-button,
+.administration-secondary-button {
+  border: 0;
+  border-radius: 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.administration-primary-button {
+  padding: 0.85rem 1.1rem;
+  color: #ffffff;
+  background: linear-gradient(135deg, #0f172a, #0f766e);
+}
+
+.administration-secondary-button {
+  padding: 0.8rem 1rem;
+  color: #0f172a;
+  background: #e2e8f0;
+}
+
+.administration-filter-grid,
+.administration-form-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.administration-field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.administration-field-span {
+  grid-column: 1 / -1;
+}
+
+.administration-field label {
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.administration-field input,
+.administration-field select,
+.administration-field textarea {
+  width: 100%;
+  padding: 0.78rem 0.9rem;
+  border: 1px solid #d8e2ec;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #0f172a;
+  font: inherit;
+}
+
+.administration-field textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.administration-field input:focus,
+.administration-field select:focus,
+.administration-field textarea:focus {
+  outline: none;
+  border-color: #14b8a6;
+  box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.12);
+}
+
+.administration-table-shell {
+  overflow: hidden;
+}
+
+.administration-table-shell-entities {
+  overflow-x: auto;
+}
+
+.administration-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.administration-table-entities {
+  min-width: 960px;
+  table-layout: fixed;
+}
+
+.administration-table th,
+.administration-table td {
+  padding: 0.95rem 1rem;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.administration-table th {
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.administration-table tbody tr:hover {
+  background: #f8fbff;
+}
+
+.administration-table-row-active {
+  background:
+    linear-gradient(90deg, rgba(20, 184, 166, 0.12), transparent 55%),
+    #f8fbff;
+}
+
+.administration-avatar {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  color: #ffffff;
+  font-weight: 800;
+  background: linear-gradient(135deg, #0f172a, #14b8a6);
+}
+
+.administration-avatar-lg {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  font-size: 1.1rem;
+}
+
+.administration-person {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.administration-user-badges {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.administration-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.administration-badge.success { background: #dcfce7; color: #166534; }
+.administration-badge.warning { background: #fef3c7; color: #92400e; }
+.administration-badge.critical { background: #fee2e2; color: #b91c1c; }
+.administration-badge.info { background: #dbeafe; color: #1d4ed8; }
+.administration-badge.neutral { background: #e2e8f0; color: #334155; }
+
+.administration-matrix {
+  overflow: auto;
+}
+
+.administration-matrix-grid {
+  min-width: 920px;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.administration-matrix-header,
+.administration-matrix-row {
+  display: grid;
+  grid-template-columns: 220px repeat(5, minmax(110px, 1fr));
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.administration-matrix-header {
+  padding: 0.8rem 1rem;
+  border-radius: 16px;
+  background: #eff6ff;
+  color: #0f172a;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.administration-matrix-header-strong {
+  border: 1px solid #dbe4f0;
+  background:
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.12), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, #eef6ff 100%);
+}
+
+.administration-matrix-header-strong strong {
+  display: block;
+}
+
+.administration-matrix-row {
+  padding: 0.9rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+}
+
+.administration-matrix-row-strong {
+  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+}
+
+.administration-matrix-module strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #0f172a;
+}
+
+.administration-matrix-module p {
+  margin: 0;
+}
+
+.administration-permission-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  justify-content: center;
+  padding: 0.45rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 0;
+}
+
+.administration-permission-pill input {
+  margin: 0;
+}
+
+.administration-permission-pill.enabled {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.administration-permission-pill.disabled {
+  background: #e2e8f0;
+  color: #64748b;
+}
+
+.administration-permission-tile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.7rem;
+  padding: 0.9rem;
+  border-radius: 18px;
+  border: 1px solid #dbe4f0;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.administration-permission-tile:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.administration-permission-tile input {
+  margin-top: 0.2rem;
+}
+
+.administration-permission-tile strong {
+  display: block;
+  color: #0f172a;
+  font-size: 0.88rem;
+}
+
+.administration-permission-tile p {
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.administration-permission-tile.disabled {
+  background: #f8fafc;
+}
+
+.administration-permission-tile.enabled {
+  background: #ffffff;
+}
+
+.administration-permission-tile-focus {
+  opacity: 1;
+}
+
+.administration-permission-tile-muted {
+  opacity: 0.5;
+}
+
+.administration-permission-tile-low.enabled {
+  border-color: #cbd5e1;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.administration-permission-tile-medium.enabled {
+  border-color: #93c5fd;
+  background: linear-gradient(180deg, #ffffff 0%, #eff6ff 100%);
+}
+
+.administration-permission-tile-high.enabled {
+  border-color: #fcd34d;
+  background: linear-gradient(180deg, #fffef5 0%, #fef3c7 100%);
+}
+
+.administration-permission-tile-critical.enabled {
+  border-color: #fca5a5;
+  background: linear-gradient(180deg, #fff7f7 0%, #fee2e2 100%);
+}
+
+.administration-audit-feed {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.administration-flow-owner-card {
+  padding: 1rem;
+  border: 1px solid #dbe4f0;
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.12), transparent 32%),
+    linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.administration-flow-owner-card span {
+  display: block;
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.administration-flow-owner-card strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #0f172a;
+  font-size: 1.05rem;
+}
+
+.administration-timeline-list {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 0.75rem;
+}
+
+.administration-timeline-step {
+  position: relative;
+  padding: 0.9rem 1rem 0.9rem 1.2rem;
+  border-radius: 16px;
+  border: 1px solid #dbe4f0;
+  background: #f8fafc;
+}
+
+.administration-timeline-step::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #0f766e, #0ea5e9);
+}
+
+.administration-timeline-step strong {
+  display: block;
+  color: #0f172a;
+  font-size: 0.92rem;
+}
+
+.administration-timeline-step p {
+  margin: 0.25rem 0 0;
+}
+
+.administration-audit-item {
+  padding: 1rem;
+}
+
+.administration-company-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-drawer-shell {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-drawer-intro,
+.administration-drawer-columns {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-drawer-rail,
+.administration-drawer-stack,
+.administration-drawer-side-panel,
+.administration-drawer-form-column,
+.administration-drawer-banner {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-drawer-rail {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.administration-drawer-banner {
+  grid-template-columns: 1fr;
+}
+
+.administration-drawer-intro {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.administration-drawer-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.administration-drawer-split-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.9fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.administration-drawer-spotlight {
+  padding: 1rem 1.05rem;
+  border: 1px solid #dbe4f0;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.98));
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.05);
+}
+
+.administration-drawer-spotlight span {
+  display: block;
+  color: #64748b;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.administration-drawer-spotlight strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.administration-drawer-spotlight p {
+  margin: 0.35rem 0 0;
+}
+
+.administration-user-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.9fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.administration-role-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(360px, 0.9fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.administration-user-main,
+.administration-user-side,
+.administration-role-main,
+.administration-role-side,
+.administration-user-table-zone,
+.administration-user-preview,
+.administration-preview-grid,
+.administration-preview-permissions {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-user-table-zone {
+  margin-top: 0.5rem;
+}
+
+.administration-user-empty {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  gap: 0.85rem;
+  padding: 1.4rem;
+  border: 1px dashed #cbd5e1;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at top, rgba(14, 165, 233, 0.1), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.administration-user-empty-mark {
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  color: #0f766e;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: rgba(20, 184, 166, 0.12);
+}
+
+.administration-user-hero {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 22px;
+  border: 1px solid #dbe4f0;
+  background:
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.16), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-user-hero h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.administration-role-hero {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: 22px;
+  border: 1px solid #dbe4f0;
+  background:
+    radial-gradient(circle at top right, rgba(239, 68, 68, 0.12), transparent 22%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.1), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-role-hero h3 {
+  margin: 0.25rem 0 0;
+  color: #0f172a;
+}
+
+.administration-preview-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.administration-preview-permissions {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 0.75rem;
+}
+
+.administration-permission-chip-card {
+  padding: 0.9rem 1rem;
+  border-radius: 18px;
+  border: 1px solid #dbe4f0;
+  background: #f8fafc;
+}
+
+.administration-permission-chip-card strong {
+  display: block;
+  color: #0f172a;
+}
+
+.administration-user-table-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.administration-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  padding: 1.25rem;
+  background: rgba(15, 23, 42, 0.38);
+  backdrop-filter: blur(6px);
+  z-index: 50;
+}
+
+.administration-drawer {
+  width: min(620px, 100%);
+  height: calc(100vh - 2.5rem);
+  overflow: auto;
+  padding: 1.25rem;
+  border-radius: 28px;
+  border: 1px solid rgba(219, 228, 240, 0.8);
+  background:
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.14), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+}
+
+.administration-drawer::before {
+  content: "";
+  display: block;
+  height: 6px;
+  margin: -1.25rem -1.25rem 1rem;
+  border-radius: 28px 28px 0 0;
+}
+
+.administration-drawer-identity {
+  width: min(640px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.14), transparent 24%),
+    radial-gradient(circle at left top, rgba(15, 118, 110, 0.12), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+}
+
+.administration-drawer-identity::before {
+  background: linear-gradient(90deg, #2563eb, #0f766e);
+}
+
+.administration-drawer-governance {
+  width: min(650px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(220, 38, 38, 0.14), transparent 22%),
+    radial-gradient(circle at left top, rgba(245, 158, 11, 0.12), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #fff9f6 100%);
+}
+
+.administration-drawer-governance::before {
+  background: linear-gradient(90deg, #dc2626, #f59e0b);
+}
+
+.administration-drawer-approval {
+  width: min(680px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.16), transparent 22%),
+    radial-gradient(circle at left top, rgba(20, 184, 166, 0.12), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #fff8f3 100%);
+}
+
+.administration-drawer-approval::before {
+  background: linear-gradient(90deg, #f97316, #0f766e);
+}
+
+.administration-drawer-architecture {
+  width: min(680px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.14), transparent 22%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.12), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+}
+
+.administration-drawer-architecture::before {
+  background: linear-gradient(90deg, #6366f1, #0ea5e9);
+}
+
+.administration-drawer-hierarchy {
+  width: min(680px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.14), transparent 22%),
+    radial-gradient(circle at left top, rgba(22, 163, 74, 0.12), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f7fcfb 100%);
+}
+
+.administration-drawer-hierarchy::before {
+  background: linear-gradient(90deg, #06b6d4, #16a34a);
+}
+
+.administration-drawer-functional {
+  width: min(680px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 22%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.12), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f7fcfb 100%);
+}
+
+.administration-drawer-functional::before {
+  background: linear-gradient(90deg, #10b981, #0ea5e9);
+}
+
+.administration-drawer-regional {
+  width: min(700px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 22%),
+    radial-gradient(circle at left top, rgba(56, 189, 248, 0.14), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f5fbff 100%);
+}
+
+.administration-drawer-regional::before {
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+
+.administration-drawer-catalogs {
+  width: min(680px, 100%);
+  background:
+    radial-gradient(circle at top right, rgba(139, 92, 246, 0.14), transparent 22%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.12), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
+}
+
+.administration-drawer-catalogs::before {
+  background: linear-gradient(90deg, #8b5cf6, #0ea5e9);
+}
+
+.administration-drawer-identity .administration-form-block,
+.administration-drawer-regional .administration-form-block {
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-drawer-governance .administration-form-block,
+.administration-drawer-approval .administration-form-block {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #fffaf6 100%);
+}
+
+.administration-drawer-architecture .administration-form-block,
+.administration-drawer-hierarchy .administration-form-block,
+.administration-drawer-functional .administration-form-block {
+  background:
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.administration-drawer-catalogs .administration-form-block {
+  background:
+    radial-gradient(circle at top right, rgba(139, 92, 246, 0.08), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
+}
+
+.administration-drawer-identity .administration-drawer-spotlight {
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.administration-drawer-governance .administration-drawer-spotlight,
+.administration-drawer-approval .administration-drawer-spotlight {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #fff9f5 100%);
+}
+
+.administration-drawer-architecture .administration-drawer-spotlight,
+.administration-drawer-hierarchy .administration-drawer-spotlight,
+.administration-drawer-functional .administration-drawer-spotlight {
+  background:
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.administration-drawer-regional .administration-drawer-spotlight {
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f5fbff 100%);
+}
+
+.administration-drawer-catalogs .administration-drawer-spotlight {
+  background:
+    radial-gradient(circle at top right, rgba(139, 92, 246, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
+}
+
+.administration-drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.administration-drawer-head h2 {
+  margin: 0.25rem 0 0;
+  color: #0f172a;
+}
+
+.administration-form-block {
+  padding: 1rem;
+  border: 1px solid #dbe4f0;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 25%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-form-block-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.administration-form-block-head h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.administration-form-grid-wide {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.administration-form-actions {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.administration-field small,
+.administration-field-error {
+  color: #b91c1c;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.administration-empty {
+  padding: 2rem;
+  text-align: center;
+}
+
+.administration-feedback {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 16px;
+  font-weight: 600;
+}
+
+.administration-feedback-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.administration-feedback-info {
+  background: #e0f2fe;
+  color: #0f4c81;
+}
+
+.administration-feedback-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.administration-approval-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.95fr);
+  gap: 1.35rem;
+  align-items: start;
+}
+
+.administration-approval-main,
+.administration-approval-side,
+.administration-approval-flow-grid {
+  display: grid;
+  gap: 1.2rem;
+}
+
+.administration-flow-card {
+  position: relative;
+  overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.administration-flow-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 40px rgba(15, 23, 42, 0.08);
+}
+
+.administration-flow-card-selected {
+  border-color: #14b8a6;
+  box-shadow: 0 22px 40px rgba(20, 184, 166, 0.18);
+}
+
+.administration-flow-card-critical::before,
+.administration-flow-card-warning::before,
+.administration-flow-card-success::before,
+.administration-flow-card-info::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+}
+
+.administration-flow-card-critical::before {
+  background: linear-gradient(180deg, #dc2626, #991b1b);
+}
+
+.administration-flow-card-warning::before {
+  background: linear-gradient(180deg, #f59e0b, #d97706);
+}
+
+.administration-flow-card-success::before {
+  background: linear-gradient(180deg, #16a34a, #15803d);
+}
+
+.administration-flow-card-info::before {
+  background: linear-gradient(180deg, #0891b2, #0f766e);
+}
+
+.administration-flow-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.administration-flow-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0.95rem 0;
+}
+
+.administration-flow-card-metrics div {
+  padding: 0.8rem;
+  border-radius: 16px;
+  background: #f8fafc;
+  border: 1px solid #dbe4f0;
+}
+
+.administration-flow-card-metrics span {
+  display: block;
+  color: #64748b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.administration-flow-card-metrics strong {
+  display: block;
+  margin-top: 0.28rem;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.administration-flow-card-expanded {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.administration-flow-hero {
+  padding: 1.2rem;
+  border-radius: 24px;
+  border: 1px solid #dbe4f0;
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-flow-hero-critical {
+  background: linear-gradient(135deg, rgba(254, 242, 242, 0.96), rgba(255, 255, 255, 0.98));
+  border-color: rgba(220, 38, 38, 0.22);
+}
+
+.administration-flow-hero-warning {
+  background: linear-gradient(135deg, rgba(255, 251, 235, 0.96), rgba(255, 255, 255, 0.98));
+  border-color: rgba(245, 158, 11, 0.24);
+}
+
+.administration-flow-hero-success {
+  background: linear-gradient(135deg, rgba(240, 253, 244, 0.96), rgba(255, 255, 255, 0.98));
+  border-color: rgba(22, 163, 74, 0.22);
+}
+
+.administration-flow-owner-card-critical {
+  border-color: rgba(220, 38, 38, 0.22);
+  background: linear-gradient(135deg, rgba(254, 242, 242, 0.98), rgba(255, 255, 255, 0.98));
+}
+
+.administration-flow-owner-card-warning {
+  border-color: rgba(245, 158, 11, 0.24);
+  background: linear-gradient(135deg, rgba(255, 251, 235, 0.98), rgba(255, 255, 255, 0.98));
+}
+
+.administration-flow-owner-card-info {
+  border-color: rgba(8, 145, 178, 0.22);
+  background: linear-gradient(135deg, rgba(236, 254, 255, 0.98), rgba(255, 255, 255, 0.98));
+}
+
+.administration-table-row-active {
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.08), rgba(15, 23, 42, 0.02));
+}
+
+.administration-table tbody tr {
+  cursor: pointer;
+  transition: background-color 160ms ease;
+}
+
+.administration-table tbody tr:hover {
+  background: rgba(15, 118, 110, 0.04);
+}
+
+.administration-table-primary {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.administration-table-primary strong {
+  color: #0f172a;
+}
+
+.administration-table-primary-entity {
+  min-width: 0;
+  gap: 0.45rem;
+}
+
+.administration-table-primary-entity strong {
+  font-size: 0.98rem;
+  line-height: 1.24;
+}
+
+.administration-table-meta {
+  display: grid;
+  gap: 0.18rem;
+  min-width: 0;
+}
+
+.administration-table-meta-inline {
+  display: flex;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+}
+
+.administration-table-code {
+  color: #334155;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.administration-table-shell-positions .administration-table td {
+  vertical-align: middle;
+}
+
+.administration-position-hierarchy-cell,
+.administration-position-usage-badges {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.administration-position-table-primary {
+  position: relative;
+}
+
+.administration-position-table-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(14, 165, 233, 0.65), rgba(20, 184, 166, 0.55));
+}
+
+.administration-position-usage-badges {
+  grid-template-columns: repeat(2, max-content);
+}
+
+.administration-position-usage-badges-fluid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.administration-toggle-field {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 52px;
+  padding: 0.95rem 1rem;
+  border: 1px solid #dbe4f0;
+  border-radius: 18px;
+  background: #f8fbff;
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.administration-toggle-field input {
+  width: 18px;
+  height: 18px;
+}
+
+.administration-table-approval th,
+.administration-table-approval td {
+  padding: 0.8rem 0.9rem;
+  vertical-align: middle;
+}
+
+.administration-table-primary-approval {
+  min-width: 0;
+  max-width: 220px;
+}
+
+.administration-table-summary-clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.35;
+}
+
+.administration-table-summary-expanded {
+  line-height: 1.4;
+}
+
+.administration-table-compact-text {
+  display: inline-block;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.administration-inline-actions-compact {
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.administration-inline-actions-compact .administration-secondary-button {
+  padding: 0.55rem 0.8rem;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.administration-link-stack {
+  gap: 0.75rem;
+}
+
+.administration-link-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.administration-inline-actions-table {
+  justify-content: flex-end;
+}
+
+.administration-inline-actions-table .administration-secondary-button {
+  min-width: 80px;
+  padding: 0.5rem 0.72rem;
+  font-size: 0.82rem;
+}
+
+.administration-inline-link {
+  margin-top: 0.2rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0f766e;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.administration-inline-link:hover {
+  color: #115e59;
+  text-decoration: underline;
+}
+
+.administration-catalog-workspace {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+  gap: 1.4rem;
+}
+
+.administration-catalog-values,
+.administration-catalog-editor {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-catalog-values-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.administration-catalog-values-list {
+  display: grid;
+  gap: 0.95rem;
+}
+
+.administration-flow-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.administration-catalog-value-card {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1.1rem 1.15rem;
+  border: 1px solid #dbe4f0;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(248, 251, 255, 0.96));
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+}
+
+.administration-catalog-value-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.administration-table-entities td {
+  vertical-align: middle;
+  min-width: 0;
+}
+
+.administration-table-entities th,
+.administration-table-entities td {
+  padding: 0.82rem 0.8rem;
+}
+
+.administration-table-entities th:nth-child(2),
+.administration-table-entities td:nth-child(2),
+.administration-table-entities th:nth-child(4),
+.administration-table-entities td:nth-child(4),
+.administration-table-entities th:nth-child(6),
+.administration-table-entities td:nth-child(6) {
+  text-align: center;
+}
+
+.administration-table-entities th:nth-child(7),
+.administration-table-entities td:nth-child(7) {
+  text-align: right;
+}
+
+.administration-table-col-catalog {
+  width: 24%;
+}
+
+.administration-table-col-module {
+  width: 12%;
+}
+
+.administration-table-col-values {
+  width: 12%;
+}
+
+.administration-table-col-type {
+  width: 10%;
+}
+
+.administration-table-col-control {
+  width: 20%;
+}
+
+.administration-table-col-status {
+  width: 8%;
+}
+
+.administration-table-col-actions {
+  width: 14%;
+}
+
+.administration-entity-metrics strong {
+  font-size: 0.92rem;
+  line-height: 1.25;
+}
+
+.administration-table-meta .administration-muted,
+.administration-table-meta-inline .administration-muted {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.administration-table-entities .administration-badge {
+  padding: 0.3rem 0.58rem;
+  font-size: 0.72rem;
+}
+
+.administration-settings-control {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.administration-feature-flag-card,
+.administration-localization-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.administration-page-overview .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.14), transparent 28%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.14), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+}
+
+.administration-page-identity .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.16), transparent 24%),
+    radial-gradient(circle at left top, rgba(15, 118, 110, 0.14), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.administration-page-governance .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(239, 68, 68, 0.14), transparent 24%),
+    radial-gradient(circle at left top, rgba(245, 158, 11, 0.14), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #fffaf7 100%);
+}
+
+.administration-page-approval .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(234, 88, 12, 0.16), transparent 24%),
+    radial-gradient(circle at left top, rgba(20, 184, 166, 0.14), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #fff9f5 100%);
+}
+
+.administration-page-registry .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.12), transparent 22%),
+    radial-gradient(circle at left top, rgba(37, 99, 235, 0.12), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-page-architecture .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.14), transparent 24%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.1), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #f8faff 100%);
+}
+
+.administration-page-hierarchy .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(6, 182, 212, 0.14), transparent 24%),
+    radial-gradient(circle at left top, rgba(22, 163, 74, 0.12), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7fcfb 100%);
+}
+
+.administration-page-functional .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 24%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.12), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7fcfb 100%);
+}
+
+.administration-page-regional .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(59, 130, 246, 0.14), transparent 24%),
+    radial-gradient(circle at left top, rgba(56, 189, 248, 0.14), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #f6fbff 100%);
+}
+
+.administration-page-catalogs .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(168, 85, 247, 0.12), transparent 22%),
+    radial-gradient(circle at left top, rgba(14, 165, 233, 0.12), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #faf8ff 100%);
+}
+
+.administration-page-runtime .administration-hero {
+  background:
+    radial-gradient(circle at top right, rgba(245, 158, 11, 0.12), transparent 24%),
+    radial-gradient(circle at left top, rgba(20, 184, 166, 0.12), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #fffbf5 100%);
+}
+
+.administration-overview-grid {
+  grid-template-columns: minmax(0, 1.3fr) minmax(340px, 0.95fr);
+}
+
+.administration-registry-workspace {
+  grid-template-columns: minmax(320px, 0.95fr) minmax(0, 1.2fr);
+}
+
+.administration-identity-workspace {
+  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 0.9fr);
+}
+
+.administration-governance-workspace {
+  grid-template-columns: minmax(0, 1.65fr) minmax(360px, 0.85fr);
+}
+
+.administration-command-workspace {
+  grid-template-columns: minmax(0, 1.5fr) minmax(360px, 0.92fr);
+}
+
+.administration-architecture-workspace {
+  grid-template-columns: minmax(0, 1.35fr) minmax(380px, 0.95fr);
+}
+
+.administration-hierarchy-workspace {
+  grid-template-columns: minmax(0, 1.28fr) minmax(380px, 0.98fr);
+}
+
+.administration-functional-workspace {
+  grid-template-columns: minmax(0, 1.38fr) minmax(360px, 0.92fr);
+}
+
+.administration-regional-workspace {
+  grid-template-columns: minmax(0, 1.32fr) minmax(380px, 0.98fr);
+}
+
+.administration-catalog-command-workspace {
+  grid-template-columns: minmax(0, 1.3fr) minmax(360px, 0.9fr);
+}
+
+.administration-catalogs-shell {
+  grid-template-columns: 1fr;
+}
+
+.administration-runtime-workspace {
+  grid-template-columns: minmax(0, 1.35fr) minmax(360px, 0.95fr);
+}
+
+.administration-panel[class*="administration-panel-"] {
+  position: relative;
+  overflow: hidden;
+}
+
+.administration-panel[class*="administration-panel-"]::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 5px;
+  opacity: 0.95;
+}
+
+.administration-panel-overview-actions::before,
+.administration-panel-overview-health::before,
+.administration-panel-overview-context::before {
+  background: linear-gradient(90deg, #0f766e, #0ea5e9);
+}
+
+.administration-panel-overview-flows::before,
+.administration-panel-overview-queue::before,
+.administration-panel-overview-audit::before {
+  background: linear-gradient(90deg, #f59e0b, #f97316);
+}
+
+.administration-panel-overview-ecosystem::before,
+.administration-panel-overview-language::before {
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+
+.administration-panel-identity-table::before,
+.administration-panel-identity-preview::before {
+  background: linear-gradient(90deg, #2563eb, #0f766e);
+}
+
+.administration-panel-governance-matrix::before,
+.administration-panel-governance-profile::before {
+  background: linear-gradient(90deg, #dc2626, #f59e0b);
+}
+
+.administration-panel-command-catalog::before,
+.administration-panel-command-queue::before,
+.administration-panel-command-executive::before,
+.administration-panel-command-request::before {
+  background: linear-gradient(90deg, #f97316, #0f766e);
+}
+
+.administration-panel-registry-portfolio::before,
+.administration-panel-registry-form::before {
+  background: linear-gradient(90deg, #0ea5e9, #2563eb);
+}
+
+.administration-panel-architecture-map::before,
+.administration-panel-architecture-executive::before {
+  background: linear-gradient(90deg, #6366f1, #0ea5e9);
+}
+
+.administration-panel-hierarchy-matrix::before,
+.administration-panel-hierarchy-summary::before {
+  background: linear-gradient(90deg, #06b6d4, #16a34a);
+}
+
+.administration-panel-functional-map::before,
+.administration-panel-functional-summary::before {
+  background: linear-gradient(90deg, #10b981, #0ea5e9);
+}
+
+.administration-panel-regional-map::before,
+.administration-panel-regional-summary::before {
+  background: linear-gradient(90deg, #2563eb, #38bdf8);
+}
+
+.administration-panel-catalogs-library::before,
+.administration-panel-catalogs-summary::before,
+.administration-panel-catalogs-designer::before {
+  background: linear-gradient(90deg, #8b5cf6, #0ea5e9);
+}
+
+.administration-panel-runtime-actions::before,
+.administration-panel-runtime-controls::before,
+.administration-panel-runtime-health::before,
+.administration-panel-runtime-audit::before {
+  background: linear-gradient(90deg, #f59e0b, #14b8a6);
+}
+
+.administration-panel-overview-flows,
+.administration-panel-command-catalog,
+.administration-panel-command-queue {
+  background:
+    radial-gradient(circle at top right, rgba(249, 115, 22, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #fffaf5 100%);
+}
+
+.administration-panel-identity-preview,
+.administration-panel-regional-summary,
+.administration-panel-runtime-health {
+  background:
+    radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.administration-panel-governance-profile,
+.administration-panel-command-executive {
+  background:
+    radial-gradient(circle at top right, rgba(220, 38, 38, 0.08), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #fffaf8 100%);
+}
+
+.administration-panel-architecture-executive,
+.administration-panel-hierarchy-summary,
+.administration-panel-functional-summary {
+  background:
+    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+}
+
+.administration-panel-catalogs-designer,
+.administration-panel-runtime-controls,
+.administration-panel-registry-form {
+  background:
+    radial-gradient(circle at top right, rgba(20, 184, 166, 0.08), transparent 24%),
+    linear-gradient(180deg, #ffffff 0%, #f8fcfb 100%);
+}
+
+.administration-page-registry .administration-company-form,
+.administration-page-runtime .administration-settings-control {
+  gap: 1.15rem;
+}
+
+.administration-page-catalogs .administration-catalog-value-card {
+  border-radius: 24px;
+}
+
+@media (max-width: 1080px) {
+  .administration-role-workspace,
+  .administration-user-workspace,
+  .administration-approval-workspace,
+  .administration-catalog-workspace,
+  .administration-overview-grid,
+  .administration-registry-workspace,
+  .administration-identity-workspace,
+  .administration-governance-workspace,
+  .administration-command-workspace,
+  .administration-architecture-workspace,
+  .administration-hierarchy-workspace,
+  .administration-functional-workspace,
+  .administration-regional-workspace,
+  .administration-catalog-command-workspace,
+  .administration-runtime-workspace,
+  .administration-grid,
+  .administration-filter-grid,
+  .administration-form-grid,
+  .administration-drawer-rail,
+  .administration-drawer-intro,
+  .administration-drawer-columns,
+  .administration-drawer-split-shell,
+  .administration-mini-grid,
+  .administration-preview-grid,
+  .administration-preview-permissions {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .administration-table-shell {
+    overflow-x: auto;
+  }
+
+  .administration-table {
+    min-width: 820px;
+  }
+
+  .administration-drawer-backdrop {
+    padding: 0;
+  }
+
+  .administration-drawer {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+  }
+}

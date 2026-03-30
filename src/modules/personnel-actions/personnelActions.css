@@ -1,0 +1,160 @@
+.personnel-actions-page .suite-card,
+.personnel-actions-page .suite-hero {
+  border-radius: 1.25rem;
+}
+
+.personnel-actions-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.personnel-actions-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.personnel-actions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.personnel-actions-table th,
+.personnel-actions-table td {
+  padding: 0.9rem 0.75rem;
+  border-bottom: 1px solid #d9e3f0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.personnel-actions-table th {
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #2b5cff;
+}
+
+.personnel-actions-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.personnel-actions-form label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.personnel-actions-form label span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2b5cff;
+}
+
+.personnel-actions-form input,
+.personnel-actions-form select,
+.personnel-actions-form textarea {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #cbd9ee;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.personnel-actions-form .span-2 {
+  grid-column: span 2;
+}
+
+.personnel-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.personnel-badge.status-draft,
+.personnel-badge.status-returned_for_changes {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.personnel-badge.status-submitted,
+.personnel-badge.status-pending_manager_review,
+.personnel-badge.status-pending_hr_review,
+.personnel-badge.status-pending_final_approval,
+.personnel-badge.status-approved {
+  background: #fff4ce;
+  color: #9a6700;
+}
+
+.personnel-badge.status-effective {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.personnel-badge.status-rejected,
+.personnel-badge.status-cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.personnel-impact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.9rem;
+}
+
+.personnel-impact-card {
+  padding: 1rem;
+  border: 1px solid #d9e3f0;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.personnel-impact-card.changed {
+  border-color: #2b5cff;
+  background: #f8fbff;
+}
+
+.personnel-trail,
+.personnel-audit-list,
+.personnel-exit-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.personnel-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.personnel-action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.personnel-feedback {
+  margin: 0 0 1rem;
+  font-weight: 700;
+  color: #0f766e;
+}
+
+.personnel-feedback.error {
+  color: #b42318;
+}
+
+@media (max-width: 900px) {
+  .personnel-actions-form {
+    grid-template-columns: 1fr;
+  }
+
+  .personnel-actions-form .span-2 {
+    grid-column: span 1;
+  }
+}

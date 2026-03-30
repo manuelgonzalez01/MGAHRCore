@@ -1,0 +1,184 @@
+.occupational-health-page .suite-card,
+.occupational-health-page .suite-hero {
+  border-radius: 1.25rem;
+}
+
+.health-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.health-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.health-table th,
+.health-table td {
+  padding: 0.9rem 0.75rem;
+  border-bottom: 1px solid #d9e3f0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.health-table th {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2b5cff;
+}
+
+.health-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.38rem 0.72rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.health-status-open,
+.health-status-pending,
+.health-status-scheduled,
+.health-status-restricted {
+  background: #fff4ce;
+  color: #9a6700;
+}
+
+.health-status-completed,
+.health-status-closed,
+.health-status-fit,
+.health-status-active {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.health-status-critical,
+.health-status-high,
+.health-status-unfit {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.health-status-monitoring,
+.health-status-follow_up,
+.health-status-warning {
+  background: #eef2ff;
+  color: #1d4ed8;
+}
+
+.health-filter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+}
+
+.health-filter-grid label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.health-filter-grid span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2b5cff;
+}
+
+.health-filter-grid input,
+.health-filter-grid select {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #cbd9ee;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.health-timeline,
+.health-case-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.health-case-card {
+  padding: 1rem;
+  border: 1px solid #d9e3f0;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.health-form-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.health-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.9rem;
+}
+
+.health-form-grid label {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.health-form-grid span {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2b5cff;
+}
+
+.health-form-grid input,
+.health-form-grid select,
+.health-form-grid textarea {
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid #cbd9ee;
+  border-radius: 1rem;
+  background: #fff;
+  resize: vertical;
+}
+
+.health-form-span-2 {
+  grid-column: span 2;
+}
+
+.health-form-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.health-form-feedback {
+  margin: 0;
+  color: #0f2b5b;
+  font-weight: 600;
+}
+
+.health-header-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.health-editable-card {
+  cursor: pointer;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.health-editable-card:hover {
+  border-color: #2b5cff;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 960px) {
+  .health-form-span-2 {
+    grid-column: span 1;
+  }
+}
