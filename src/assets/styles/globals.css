@@ -882,6 +882,21 @@
   min-width: 0;
 }
 
+.sidebar-company-menu {
+  position: relative;
+  min-width: 0;
+}
+
+.sidebar-company-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
 .sidebar-brand__company {
   display: inline-flex;
   align-items: center;
@@ -894,34 +909,40 @@
   text-overflow: ellipsis;
 }
 
-.sidebar-company-switcher {
+.sidebar-company-menu__content {
+  position: absolute;
+  top: calc(100% + 0.7rem);
+  left: 0;
+  display: grid;
+  gap: 0.25rem;
+  min-width: 240px;
+  padding: 0.45rem;
+  border: 1px solid rgba(51, 65, 85, 0.88);
+  border-radius: 18px;
+  background: #0f172a;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+  z-index: 35;
+}
+
+.sidebar-company-menu__item {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: 220px;
-  padding: 0.05rem 0;
-}
-
-.sidebar-company-switcher select {
-  width: 100%;
-  max-width: 220px;
+  padding: 0.7rem 0.85rem;
   border: 0;
+  border-radius: 12px;
   background: transparent;
-  color: #f8fbff;
-  font-size: 1.28rem;
-  font-weight: 800;
-  line-height: 1.1;
-  padding: 0;
+  color: rgba(226, 232, 240, 0.94);
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
   cursor: pointer;
-  text-overflow: ellipsis;
 }
 
-.sidebar-company-switcher select:focus {
-  outline: none;
-}
-
-.sidebar-company-switcher option {
-  color: #132238;
+.sidebar-company-menu__item:hover,
+.sidebar-company-menu__item.is-active {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f8fbff;
 }
 
 .sidebar-mobile-toggle {
@@ -1205,6 +1226,12 @@
 
   .sidebar-main.is-open {
     display: flex;
+  }
+
+  .sidebar-company-menu__content {
+    position: static;
+    min-width: 100%;
+    margin-top: 0.65rem;
   }
 
   .sidebar-nav {

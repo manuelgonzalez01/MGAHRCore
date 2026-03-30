@@ -15,6 +15,7 @@ export default function Sidebar() {
   const logout = useAuthStore((state) => state.logout);
   const [openMenu, setOpenMenu] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isCompanyMenuOpen, setIsCompanyMenuOpen] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window !== "undefined" ? window.innerWidth > 900 : true,
   );
@@ -50,6 +51,12 @@ export default function Sidebar() {
     setIsMobileMenuOpen(false);
   }
 
+  function handleCompanyChange(companyId) {
+    setActiveCompany(companyId);
+    setIsCompanyMenuOpen(false);
+    closeMobileMenu();
+  }
+
   async function handleLogout() {
     try {
       await authService.logoutUser();
@@ -70,20 +77,51 @@ export default function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebar-brand">
-        {user?.canAccessAllCompanies && availableCompanies.length > 1 ? (
-          <label className="sidebar-company-switcher">
-            <select
-              value={activeCompanyId || availableCompanies[0]?.id || ""}
-              onChange={(event) => setActiveCompany(event.target.value)}
-              aria-label={language === "en" ? "Active company" : "Compania activa"}
+        {availableCompanies.length > 1 ? (
+          <div
+            className={`sidebar-company-menu${isCompanyMenuOpen ? " is-open" : ""}`}
+            onMouseEnter={() => {
+              if (isDesktop) {
+                setIsCompanyMenuOpen(true);
+              }
+            }}
+            onMouseLeave={() => {
+              if (isDesktop) {
+                setIsCompanyMenuOpen(false);
+              }
+            }}
+          >
+            <button
+              type="button"
+              className="sidebar-company-menu__trigger"
+              aria-expanded={isCompanyMenuOpen ? "true" : "false"}
+              aria-label={language === "en" ? "Change company" : "Cambiar compania"}
+              onClick={() => {
+                if (!isDesktop) {
+                  setIsCompanyMenuOpen((current) => !current);
+                }
+              }}
             >
-              {availableCompanies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
-            </select>
-          </label>
+              <span className="sidebar-brand__company">{activeCompanyName}</span>
+            </button>
+
+            {isCompanyMenuOpen ? (
+              <div className="sidebar-company-menu__content">
+                {availableCompanies.map((company) => (
+                  <button
+                    key={company.id}
+                    type="button"
+                    className={`sidebar-company-menu__item${
+                      company.id === activeCompanyId ? " is-active" : ""
+                    }`}
+                    onClick={() => handleCompanyChange(company.id)}
+                  >
+                    {company.name}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
         ) : (
           <span className="sidebar-brand__company">{activeCompanyName}</span>
         )}
