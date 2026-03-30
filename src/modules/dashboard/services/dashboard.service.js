@@ -122,8 +122,8 @@ function buildModuleScorecards({ recruitment, employees, vacations, reports, sel
 }
 
 export async function getDashboardOverview() {
-  const recruitment = recruitmentService.getRecruitmentDashboardData();
   const [
+    recruitment,
     administration,
     employees,
     vacations,
@@ -134,6 +134,7 @@ export async function getDashboardOverview() {
     insurance,
     occupationalHealth,
   ] = await Promise.allSettled([
+    recruitmentService.getRecruitmentDashboardData(),
     administrationService.getAdministrationCore(),
     employeesService.getEmployeesDashboard(),
     vacationsService.getVacationsDashboard(),
@@ -144,6 +145,14 @@ export async function getDashboardOverview() {
     getInsuranceDashboard(),
     getOccupationalHealthDashboard(),
   ]);
+  const recruitmentData = resolveSettled(recruitment, {
+    jobRequests: [],
+    candidates: [],
+    interviews: [],
+    evaluations: [],
+    stats: [],
+    recentActivity: [],
+  });
 
   const administrationData = resolveSettled(administration, {
     approvalQueue: [],
@@ -212,7 +221,7 @@ export async function getDashboardOverview() {
     development: developmentData,
   });
   const moduleScorecards = buildModuleScorecards({
-    recruitment,
+    recruitment: recruitmentData,
     employees: employeesData,
     vacations: vacationsData,
     reports: reportsData,
@@ -230,7 +239,7 @@ export async function getDashboardOverview() {
       detail: item.detail,
       date: item.timestamp,
     })),
-    ...recruitment.recentActivity.map((item) => ({
+    ...recruitmentData.recentActivity.map((item) => ({
       id: item.id,
       source: "Recruitment",
       title: item.title,
@@ -266,8 +275,8 @@ export async function getDashboardOverview() {
         },
         {
           label: "Pipeline abierto",
-          value: recruitment.stats[0]?.value ?? 0,
-          helper: `${recruitment.candidates.length} candidatos activos`,
+          value: recruitmentData.stats[0]?.value ?? 0,
+          helper: `${recruitmentData.candidates.length} candidatos activos`,
         },
         {
           label: "Riesgos visibles",

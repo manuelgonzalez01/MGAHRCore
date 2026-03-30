@@ -313,8 +313,10 @@ function resolvePositionContext(payload = {}, organizations) {
   };
 }
 
-export function getRecruitmentBridge() {
-  return (getCandidates() || []).map((candidate, index) => ({
+export async function getRecruitmentBridge() {
+  const candidates = await getCandidates();
+
+  return candidates.map((candidate, index) => ({
     id: candidate.id || `CAN-${index}`,
     name: candidate.name || "Candidato",
     positionId: candidate.positionId || "",
@@ -465,9 +467,14 @@ export async function approveEmployeeRequest(requestId) {
 }
 
 export async function getEmployeesDashboard() {
-  const employees = await getEmployees();
-  const requests = await getEmployeeRequests();
-  const recruitmentBridge = getRecruitmentBridge();
+  const [employeesResult, requestsResult, recruitmentBridgeResult] = await Promise.allSettled([
+    getEmployees(),
+    getEmployeeRequests(),
+    getRecruitmentBridge(),
+  ]);
+  const employees = employeesResult.status === "fulfilled" ? employeesResult.value : [];
+  const requests = requestsResult.status === "fulfilled" ? requestsResult.value : [];
+  const recruitmentBridge = recruitmentBridgeResult.status === "fulfilled" ? recruitmentBridgeResult.value : [];
   const language = getCurrentLanguage();
   const isEnglish = language === "en";
   const activeEmployees = employees.filter((item) => item.status === "active");

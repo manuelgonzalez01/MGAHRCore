@@ -17,11 +17,36 @@ export default function useAdministrationOverview() {
       setError("");
 
       try {
-        const [core, employeesDashboard] = await Promise.all([
+        const [coreResult, employeesDashboardResult, recruitmentDashboardResult] = await Promise.allSettled([
           administrationService.getAdministrationCore(),
           employeesService.getEmployeesDashboard(),
+          recruitmentService.getRecruitmentDashboardData(),
         ]);
-        const recruitmentDashboard = recruitmentService.getRecruitmentDashboardData();
+        const core = coreResult.status === "fulfilled" ? coreResult.value : null;
+        const employeesDashboard = employeesDashboardResult.status === "fulfilled"
+          ? employeesDashboardResult.value
+          : {
+              employees: [],
+              requests: [],
+              recruitmentBridge: [],
+              insights: {},
+              stats: [],
+            };
+        const recruitmentDashboard = recruitmentDashboardResult.status === "fulfilled"
+          ? recruitmentDashboardResult.value
+          : {
+              jobRequests: [],
+              candidates: [],
+              interviews: [],
+              evaluations: [],
+              stats: [],
+              pipelineSummary: [],
+              recentActivity: [],
+            };
+
+        if (!core) {
+          throw new Error("administration_core_unavailable");
+        }
 
         if (!ignore) {
           setData({
