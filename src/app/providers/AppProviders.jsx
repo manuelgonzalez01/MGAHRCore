@@ -29,7 +29,7 @@ function getBootstrapLanguage() {
 export default function AppProviders({ children }) {
   const hydrateAuth = useAuthStore((state) => state.hydrate);
   const logoutAuth = useAuthStore((state) => state.logout);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(() => useAuthStore.getState().isAuthenticated || platformService.isPlatformReady());
   const [language, setLanguage] = useState(getBootstrapLanguage);
   const [bootstrapError, setBootstrapError] = useState("");
 
