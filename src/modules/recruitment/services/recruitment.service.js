@@ -194,7 +194,27 @@ function normalizeJobRequest(item) {
     openings: Number(item.openings) || 1,
     modality: item.modality || "hybrid",
     priority: item.priority || "medium",
-    status: item.status || "open",
+    contractType: item.contractType || "indefinite",
+    requestType: item.requestType || "replacement",
+    recruiterOwner: item.recruiterOwner || "",
+    processOwner: item.processOwner || "",
+    requestingArea: item.requestingArea || context.department || "",
+    targetHireDate: item.targetHireDate || "",
+    replacedEmployeeId: item.replacedEmployeeId || "",
+    replacedEmployeeName: item.replacedEmployeeName || "",
+    businessReason: item.businessReason || "",
+    roleImpact: item.roleImpact || "",
+    priorityJustification: item.priorityJustification || "",
+    areaNotes: item.areaNotes || "",
+    hiringPlan: item.hiringPlan || "",
+    requiresApproval: Boolean(item.requiresApproval),
+    affectsBudget: Boolean(item.affectsBudget),
+    approvalPath: Array.isArray(item.approvalPath) ? item.approvalPath : [],
+    createdBy: item.createdBy || item.requestedBy || getActor(),
+    updatedAt: item.updatedAt || item.createdAt || new Date().toISOString(),
+    lastModifiedBy: item.lastModifiedBy || item.requestedBy || getActor(),
+    history: Array.isArray(item.history) ? item.history : [],
+    status: item.status || "draft",
     createdAt: item.createdAt || new Date().toISOString(),
   };
 }
@@ -418,6 +438,21 @@ async function createLocalJobRequest(payload = {}) {
   return nextItem;
 }
 
+async function updateLocalJobRequest(payload = {}) {
+  const items = getLocalJobRequests();
+  const nextItems = items.map((item) => (
+    item.id === payload.id
+      ? normalizeJobRequest({
+          ...item,
+          ...payload,
+          updatedAt: new Date().toISOString(),
+        })
+      : item
+  ));
+  writeCollection(STORAGE_KEYS.jobRequests, nextItems);
+  return nextItems.find((item) => item.id === payload.id) || null;
+}
+
 async function createLocalCandidate(payload = {}) {
   const items = getLocalCandidates();
   const nextItem = normalizeCandidate({
@@ -463,6 +498,14 @@ export async function createJobRequest(payload = {}) {
   }
 
   return createLocalJobRequest(payload);
+}
+
+export async function updateJobRequest(payload = {}) {
+  if (hasSupabaseConfig) {
+    return updateLocalJobRequest(payload);
+  }
+
+  return updateLocalJobRequest(payload);
 }
 
 export async function createCandidate(payload = {}) {
@@ -600,9 +643,13 @@ export const recruitmentCopy = {
     },
     labels: {
       status: {
+        draft: "Borrador",
+        submitted: "Enviada",
+        pending_review: "Pendiente de revision",
         open: "Abierta",
         in_progress: "En ejecucion",
         approved: "Aprobada",
+        rejected: "Rechazada",
         closed: "Cerrada",
         active: "Activo",
         pipeline: "Pipeline",
@@ -622,6 +669,7 @@ export const recruitmentCopy = {
       priority: {
         high: "Alta",
         medium: "Media",
+        critical: "Critica",
         low: "Baja",
       },
       modality: {
@@ -756,9 +804,13 @@ export const recruitmentCopy = {
     },
     labels: {
       status: {
+        draft: "Draft",
+        submitted: "Submitted",
+        pending_review: "Pending review",
         open: "Open",
         in_progress: "In progress",
         approved: "Approved",
+        rejected: "Rejected",
         closed: "Closed",
         active: "Active",
         pipeline: "Pipeline",
@@ -778,6 +830,7 @@ export const recruitmentCopy = {
       priority: {
         high: "High",
         medium: "Medium",
+        critical: "Critical",
         low: "Low",
       },
       modality: {
@@ -809,6 +862,7 @@ const recruitmentService = {
   getInterviews,
   getEvaluations,
   createJobRequest,
+  updateJobRequest,
   createCandidate,
   createInterview,
   createEvaluation,

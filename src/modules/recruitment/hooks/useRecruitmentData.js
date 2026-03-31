@@ -132,6 +132,11 @@ export default function useRecruitmentData() {
     refresh();
   }, [refresh]);
 
+  const updateJobRequest = useCallback(async (payload) => {
+    await recruitmentService.updateJobRequest(payload);
+    refresh();
+  }, [refresh]);
+
   const createCandidate = useCallback(async (payload) => {
     await recruitmentService.createCandidate(payload);
     refresh();
@@ -162,6 +167,7 @@ export default function useRecruitmentData() {
     filteredInterviews,
     filteredEvaluations,
     createJobRequest,
+    updateJobRequest,
     createCandidate,
     createInterview,
     createEvaluation,

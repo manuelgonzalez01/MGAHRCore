@@ -30,7 +30,7 @@ export default function JobRequestsTable({ items, copy, selectedId, onSelect }) 
             >
               <td>
                 <div className="recruitment-item-title">{item.title}</div>
-                <div className="recruitment-item-subtitle">{item.id}</div>
+                <div className="recruitment-item-subtitle">{item.id} | {item.requestType || "-"}</div>
               </td>
               <td>
                 <div>{item.position || item.title}</div>
@@ -50,7 +50,7 @@ export default function JobRequestsTable({ items, copy, selectedId, onSelect }) 
               <td>{item.openings}</td>
               <td>
                 <div>{copy.labels.modality?.[item.modality] || item.modality}</div>
-                <div className="recruitment-item-subtitle">{item.location}</div>
+                <div className="recruitment-item-subtitle">{item.location} | {item.targetHireDate ? formatDateTimeBySettings(item.targetHireDate, language) : "-"}</div>
               </td>
               <td>{formatDateTimeBySettings(item.createdAt, language)}</td>
               <td>
