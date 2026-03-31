@@ -77,6 +77,7 @@ export default function JobRequestsPage() {
   const [editorForm, setEditorForm] = useState(() => createInitialRequisitionForm());
   const [editorErrors, setEditorErrors] = useState({});
   const [selectedRequestId, setSelectedRequestId] = useState(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
@@ -178,12 +179,21 @@ export default function JobRequestsPage() {
     });
     setEditorErrors({});
     setFeedback("");
+    setIsFormOpen(true);
+  }
+
+  function openNewEditor() {
+    setEditorForm(createInitialRequisitionForm());
+    setEditorErrors({});
+    setFeedback("");
+    setIsFormOpen(true);
   }
 
   function resetEditor() {
     setEditorForm(createInitialRequisitionForm());
     setEditorErrors({});
     setFeedback("");
+    setIsFormOpen(false);
   }
 
   async function handleSaveDraft() {
@@ -201,6 +211,7 @@ export default function JobRequestsPage() {
       await createJobRequest(payload);
     }
     setFeedback(isSpanish ? "Borrador guardado con trazabilidad." : "Draft saved with traceability.");
+    setIsFormOpen(false);
   }
 
   async function handleSubmitForApproval() {
@@ -223,6 +234,7 @@ export default function JobRequestsPage() {
         ? (isSpanish ? "Requisicion enviada a revision." : "Requisition sent to review.")
         : (isSpanish ? "Requisicion enviada correctamente." : "Requisition submitted successfully."),
     );
+    setIsFormOpen(false);
   }
 
   const formCopy = {
@@ -333,14 +345,21 @@ export default function JobRequestsPage() {
         description={formCopy.workspaceDescription}
         metrics={summaryMetrics}
         actions={
-          <button type="button" className="recruitment-primary-button" onClick={resetEditor}>
+          <button type="button" className="recruitment-primary-button" onClick={openNewEditor}>
             {copy.buttons.newRequest}
           </button>
         }
       />
 
-      <section className="requisition-workspace">
-        <div className="requisition-workspace__main">
+      {isFormOpen ? (
+        <div className="recruitment-drawer-backdrop" onClick={resetEditor}>
+          <aside
+            className="recruitment-drawer-shell"
+            onClick={(event) => event.stopPropagation()}
+            aria-label={formCopy.workspaceTitle}
+          >
+            <section className="requisition-workspace">
+              <div className="requisition-workspace__main">
           <RequisitionValidationAlert title={formCopy.validationTitle} errors={validationList} />
           <RequisitionContextCard title={formCopy.section1Title} items={contextItems} tone="context" />
 
@@ -524,7 +543,7 @@ export default function JobRequestsPage() {
           <RequisitionActionBar
             draftLabel={formCopy.draftLabel}
             submitLabel={formCopy.submitLabel}
-            cancelLabel={formCopy.cancelLabel}
+            cancelLabel={isSpanish ? "Cerrar" : "Close"}
             onSaveDraft={handleSaveDraft}
             onSubmit={handleSubmitForApproval}
             onCancel={resetEditor}
@@ -546,7 +565,10 @@ export default function JobRequestsPage() {
             />
           ) : null}
         </div>
-      </section>
+            </section>
+          </aside>
+        </div>
+      ) : null}
 
       <RecruitmentFilters
         copy={copy}
