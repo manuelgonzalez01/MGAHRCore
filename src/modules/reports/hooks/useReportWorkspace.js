@@ -19,16 +19,26 @@ export default function useReportWorkspace(loader, reportKey) {
 
     async function load() {
       setLoading(true);
-      const nextFilters = JSON.parse(filtersKey);
-      const [nextOptions, nextData] = await Promise.all([
-        getReportsFiltersOptions(language),
-        loader(nextFilters, language),
-      ]);
+      try {
+        const nextFilters = JSON.parse(filtersKey);
+        const [nextOptions, nextData] = await Promise.all([
+          getReportsFiltersOptions(language),
+          loader(nextFilters, language),
+        ]);
 
-      if (!cancelled) {
-        setOptions(nextOptions);
-        setData(nextData);
-        setLoading(false);
+        if (!cancelled) {
+          setOptions(nextOptions);
+          setData(nextData);
+        }
+      } catch {
+        if (!cancelled) {
+          setOptions(createEmptyFilterOptions(language));
+          setData(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     }
 

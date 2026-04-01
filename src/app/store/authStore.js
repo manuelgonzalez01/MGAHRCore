@@ -13,6 +13,7 @@ function readStoredSession() {
       token: "",
       isAuthenticated: false,
       activeCompanyId: "",
+      bootstrapped: false,
     };
   }
 
@@ -25,6 +26,7 @@ function readStoredSession() {
       token: parsed?.token || "",
       isAuthenticated: Boolean(user),
       activeCompanyId: user?.activeCompanyId || "",
+      bootstrapped: Boolean(user),
     };
   } catch {
     return {
@@ -32,6 +34,7 @@ function readStoredSession() {
       token: "",
       isAuthenticated: false,
       activeCompanyId: "",
+      bootstrapped: false,
     };
   }
 }
@@ -59,6 +62,7 @@ const useAuthStore = create((set) => ({
       token,
       isAuthenticated: true,
       activeCompanyId: user?.activeCompanyId || "",
+      bootstrapped: true,
     };
     persistSession(nextState);
     set(nextState);
@@ -69,10 +73,19 @@ const useAuthStore = create((set) => ({
       token,
       isAuthenticated: Boolean(user),
       activeCompanyId: user?.activeCompanyId || "",
+      bootstrapped: true,
     };
     persistSession(nextState);
     set(nextState);
   },
+  markBootstrapped: () =>
+    set((state) => ({
+      bootstrapped: true,
+      user: state.user,
+      token: state.token,
+      isAuthenticated: state.isAuthenticated,
+      activeCompanyId: state.activeCompanyId,
+    })),
   setActiveCompany: (companyId) =>
     set((state) => {
       const nextState = {
@@ -92,6 +105,7 @@ const useAuthStore = create((set) => ({
       token: "",
       isAuthenticated: false,
       activeCompanyId: "",
+      bootstrapped: true,
     });
   },
 }));

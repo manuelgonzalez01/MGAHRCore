@@ -8,8 +8,10 @@ import { getSelfServiceDashboard } from "../../self-service/services/selfService
 import { getPersonnelActionsDashboard } from "../../personnel-actions/services/personnelActions.service";
 import { getInsuranceDashboard } from "../../Insurance/services/insurance.service";
 import { getOccupationalHealthDashboard } from "../../occupational-health/services/occupationalHealth.service";
+import { loadCachedResource } from "../../../utils/resourceCache";
 
 const DASHBOARD_SOURCE_TIMEOUT_MS = 6000;
+const DASHBOARD_CACHE_TTL_MS = 15_000;
 
 function resolveSettled(result, fallback) {
   return result.status === "fulfilled" ? result.value : fallback;
@@ -133,197 +135,203 @@ function buildModuleScorecards({ recruitment, employees, vacations, reports, sel
 }
 
 export async function getDashboardOverview() {
-  const [
-    recruitment,
-    administration,
-    employees,
-    vacations,
-    development,
-    reports,
-    selfService,
-    personnelActions,
-    insurance,
-    occupationalHealth,
-  ] = await Promise.allSettled([
-    withTimeout(recruitmentService.getRecruitmentDashboardData(), "recruitment"),
-    withTimeout(administrationService.getAdministrationCore(), "administration"),
-    withTimeout(employeesService.getEmployeesDashboard(), "employees"),
-    withTimeout(vacationsService.getVacationsDashboard(), "vacations"),
-    withTimeout(getDevelopmentDashboard(), "development"),
-    withTimeout(getReportsDashboard(), "reports"),
-    withTimeout(getSelfServiceDashboard(), "self_service"),
-    withTimeout(getPersonnelActionsDashboard(), "personnel_actions"),
-    withTimeout(getInsuranceDashboard(), "insurance"),
-    withTimeout(getOccupationalHealthDashboard(), "occupational_health"),
-  ]);
-  const recruitmentData = resolveSettled(recruitment, {
-    jobRequests: [],
-    candidates: [],
-    interviews: [],
-    evaluations: [],
-    stats: [],
-    recentActivity: [],
-  });
+  return loadCachedResource(
+    "dashboard:overview",
+    async () => {
+      const [
+        recruitment,
+        administration,
+        employees,
+        vacations,
+        development,
+        reports,
+        selfService,
+        personnelActions,
+        insurance,
+        occupationalHealth,
+      ] = await Promise.allSettled([
+        withTimeout(recruitmentService.getRecruitmentDashboardData(), "recruitment"),
+        withTimeout(administrationService.getAdministrationCore(), "administration"),
+        withTimeout(employeesService.getEmployeesDashboard(), "employees"),
+        withTimeout(vacationsService.getVacationsDashboard(), "vacations"),
+        withTimeout(getDevelopmentDashboard(), "development"),
+        withTimeout(getReportsDashboard(), "reports"),
+        withTimeout(getSelfServiceDashboard(), "self_service"),
+        withTimeout(getPersonnelActionsDashboard(), "personnel_actions"),
+        withTimeout(getInsuranceDashboard(), "insurance"),
+        withTimeout(getOccupationalHealthDashboard(), "occupational_health"),
+      ]);
+      const recruitmentData = resolveSettled(recruitment, {
+        jobRequests: [],
+        candidates: [],
+        interviews: [],
+        evaluations: [],
+        stats: [],
+        recentActivity: [],
+      });
 
-  const administrationData = resolveSettled(administration, {
-    approvalQueue: [],
-    auditFeed: [],
-  });
-  const employeesData = resolveSettled(employees, {
-    employees: [],
-    requests: [],
-    recruitmentBridge: [],
-    insights: {
-      activeEmployees: 0,
-      averageProfileCompletion: 0,
-    },
-  });
-  const vacationsData = resolveSettled(vacations, {
-    dashboard: {
-      activeConflicts: 0,
-      pendingRequests: 0,
-    },
-    conflicts: [],
-    history: [],
-  });
-  const developmentData = resolveSettled(development, {
-    stats: {
-      criticalGaps: 0,
-      activePlans: 0,
-    },
-  });
-  const reportsData = resolveSettled(reports, {
-    stats: {
-      reportCatalog: 0,
-      operationalIndicators: 0,
-    },
-  });
-  const selfServiceData = resolveSettled(selfService, {
-    stats: {
-      pendingRequests: 0,
-      vacationBalance: 0,
-    },
-  });
-  const personnelActionsData = resolveSettled(personnelActions, {
-    stats: {
-      pendingApprovals: 0,
-      actionsLogged: 0,
-    },
-  });
-  const insuranceData = resolveSettled(insurance, {
-    stats: {
-      exclusions: 0,
-      coveredEmployees: 0,
-      coveredDependents: 0,
-    },
-  });
-  const occupationalHealthData = resolveSettled(occupationalHealth, {
-    stats: {
-      openCases: 0,
-      monitoredEmployees: 0,
-    },
-  });
+      const administrationData = resolveSettled(administration, {
+        approvalQueue: [],
+        auditFeed: [],
+      });
+      const employeesData = resolveSettled(employees, {
+        employees: [],
+        requests: [],
+        recruitmentBridge: [],
+        insights: {
+          activeEmployees: 0,
+          averageProfileCompletion: 0,
+        },
+      });
+      const vacationsData = resolveSettled(vacations, {
+        dashboard: {
+          activeConflicts: 0,
+          pendingRequests: 0,
+        },
+        conflicts: [],
+        history: [],
+      });
+      const developmentData = resolveSettled(development, {
+        stats: {
+          criticalGaps: 0,
+          activePlans: 0,
+        },
+      });
+      const reportsData = resolveSettled(reports, {
+        stats: {
+          reportCatalog: 0,
+          operationalIndicators: 0,
+        },
+      });
+      const selfServiceData = resolveSettled(selfService, {
+        stats: {
+          pendingRequests: 0,
+          vacationBalance: 0,
+        },
+      });
+      const personnelActionsData = resolveSettled(personnelActions, {
+        stats: {
+          pendingApprovals: 0,
+          actionsLogged: 0,
+        },
+      });
+      const insuranceData = resolveSettled(insurance, {
+        stats: {
+          exclusions: 0,
+          coveredEmployees: 0,
+          coveredDependents: 0,
+        },
+      });
+      const occupationalHealthData = resolveSettled(occupationalHealth, {
+        stats: {
+          openCases: 0,
+          monitoredEmployees: 0,
+        },
+      });
 
-  const riskRegister = buildRiskRegister({
-    employees: employeesData,
-    administration: administrationData,
-    vacations: vacationsData,
-    insurance: insuranceData,
-    development: developmentData,
-  });
-  const moduleScorecards = buildModuleScorecards({
-    recruitment: recruitmentData,
-    employees: employeesData,
-    vacations: vacationsData,
-    reports: reportsData,
-    selfService: selfServiceData,
-    personnelActions: personnelActionsData,
-    development: developmentData,
-    insurance: insuranceData,
-    occupationalHealth: occupationalHealthData,
-  });
-  const activityFeed = [
-    ...administrationData.auditFeed.map((item) => ({
-      id: item.id,
-      source: "Administration",
-      title: item.title,
-      detail: item.detail,
-      date: item.timestamp,
-    })),
-    ...recruitmentData.recentActivity.map((item) => ({
-      id: item.id,
-      source: "Recruitment",
-      title: item.title,
-      detail: item.meta,
-      date: item.date,
-    })),
-    ...vacationsData.history.slice(0, 4).map((item) => ({
-      id: item.id,
-      source: "Vacations",
-      title: item.title,
-      detail: `${item.employeeName} | ${item.requestStatus}`,
-      date: item.occurredAt,
-    })),
-  ]
-    .sort((left, right) => new Date(right.date) - new Date(left.date))
-    .slice(0, 10);
+      const riskRegister = buildRiskRegister({
+        employees: employeesData,
+        administration: administrationData,
+        vacations: vacationsData,
+        insurance: insuranceData,
+        development: developmentData,
+      });
+      const moduleScorecards = buildModuleScorecards({
+        recruitment: recruitmentData,
+        employees: employeesData,
+        vacations: vacationsData,
+        reports: reportsData,
+        selfService: selfServiceData,
+        personnelActions: personnelActionsData,
+        development: developmentData,
+        insurance: insuranceData,
+        occupationalHealth: occupationalHealthData,
+      });
+      const activityFeed = [
+        ...administrationData.auditFeed.map((item) => ({
+          id: item.id,
+          source: "Administration",
+          title: item.title,
+          detail: item.detail,
+          date: item.timestamp,
+        })),
+        ...recruitmentData.recentActivity.map((item) => ({
+          id: item.id,
+          source: "Recruitment",
+          title: item.title,
+          detail: item.meta,
+          date: item.date,
+        })),
+        ...vacationsData.history.slice(0, 4).map((item) => ({
+          id: item.id,
+          source: "Vacations",
+          title: item.title,
+          detail: `${item.employeeName} | ${item.requestStatus}`,
+          date: item.occurredAt,
+        })),
+      ]
+        .sort((left, right) => new Date(right.date) - new Date(left.date))
+        .slice(0, 10);
 
-  return {
-    hero: {
-      title: "Centro operativo ejecutivo",
-      description:
-        "Un tablero transversal para leer salud organizacional, riesgos, aprobaciones, talento y cobertura operacional sin salir del workspace.",
-      stats: [
-        {
-          label: "Headcount activo",
-          value: employeesData.insights.activeEmployees,
-          helper: `${employeesData.employees.length} registros trazados`,
+      return {
+        hero: {
+          title: "Centro operativo ejecutivo",
+          description:
+            "Un tablero transversal para leer salud organizacional, riesgos, aprobaciones, talento y cobertura operacional sin salir del workspace.",
+          stats: [
+            {
+              label: "Headcount activo",
+              value: employeesData.insights.activeEmployees,
+              helper: `${employeesData.employees.length} registros trazados`,
+            },
+            {
+              label: "Aprobaciones pendientes",
+              value: administrationData.approvalQueue.filter((item) => item.status === "pending").length,
+              helper: "Solicitudes transversales en flujo",
+            },
+            {
+              label: "Pipeline abierto",
+              value: recruitmentData.stats[0]?.value ?? 0,
+              helper: `${recruitmentData.candidates.length} candidatos activos`,
+            },
+            {
+              label: "Riesgos visibles",
+              value: riskRegister.filter((item) => item.severity !== "healthy").length,
+              helper: "Alertas que afectan operacion o percepcion",
+            },
+          ],
         },
-        {
-          label: "Aprobaciones pendientes",
-          value: administrationData.approvalQueue.filter((item) => item.status === "pending").length,
-          helper: "Solicitudes transversales en flujo",
-        },
-        {
-          label: "Pipeline abierto",
-          value: recruitmentData.stats[0]?.value ?? 0,
-          helper: `${recruitmentData.candidates.length} candidatos activos`,
-        },
-        {
-          label: "Riesgos visibles",
-          value: riskRegister.filter((item) => item.severity !== "healthy").length,
-          helper: "Alertas que afectan operacion o percepcion",
-        },
-      ],
+        moduleScorecards,
+        riskRegister,
+        approvalQueue: administrationData.approvalQueue.filter((item) => item.status === "pending").slice(0, 6),
+        activityFeed,
+        focusAreas: [
+          {
+            title: "Continuidad Recruitment -> Employees",
+            metric: employeesData.recruitmentBridge.length,
+            detail: "Candidatos listos para convertirse en altas controladas.",
+          },
+          {
+            title: "Control vacacional",
+            metric: vacationsData.dashboard.pendingRequests,
+            detail: "Solicitudes que aun requieren decision o seguimiento.",
+          },
+          {
+            title: "Madurez documental",
+            metric: `${employeesData.insights.averageProfileCompletion}%`,
+            detail: "Promedio de completitud del expediente del colaborador.",
+          },
+          {
+            title: "Analitica disponible",
+            metric: reportsData.stats.reportCatalog,
+            detail: "Reportes ejecutivos listos para lectura de negocio.",
+          },
+        ],
+        peopleSpotlight: employeesData.employees.slice(0, 3),
+      };
     },
-    moduleScorecards,
-    riskRegister,
-    approvalQueue: administrationData.approvalQueue.filter((item) => item.status === "pending").slice(0, 6),
-    activityFeed,
-    focusAreas: [
-      {
-        title: "Continuidad Recruitment -> Employees",
-        metric: employeesData.recruitmentBridge.length,
-        detail: "Candidatos listos para convertirse en altas controladas.",
-      },
-      {
-        title: "Control vacacional",
-        metric: vacationsData.dashboard.pendingRequests,
-        detail: "Solicitudes que aun requieren decision o seguimiento.",
-      },
-      {
-        title: "Madurez documental",
-        metric: `${employeesData.insights.averageProfileCompletion}%`,
-        detail: "Promedio de completitud del expediente del colaborador.",
-      },
-      {
-        title: "Analitica disponible",
-        metric: reportsData.stats.reportCatalog,
-        detail: "Reportes ejecutivos listos para lectura de negocio.",
-      },
-    ],
-    peopleSpotlight: employeesData.employees.slice(0, 3),
-  };
+    DASHBOARD_CACHE_TTL_MS,
+  );
 }
 
 export default { getDashboardOverview };

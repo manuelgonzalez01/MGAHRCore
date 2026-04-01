@@ -6,10 +6,48 @@ import {
   getTenantContext,
 } from "./tenantContext.service";
 
+const ORGANIZATIONS_CACHE_TTL_MS = 30_000;
+const organizationsCache = new Map();
+
 function ensureSupabase() {
   if (!hasSupabaseConfig || !supabase) {
     throw new Error("Supabase no esta disponible.");
   }
+}
+
+function getOrganizationsCacheKey(tenantContext) {
+  if (!tenantContext) {
+    return "anonymous";
+  }
+
+  return tenantContext.canAccessAllCompanies
+    ? `global:${tenantContext.userId || "unknown"}`
+    : `company:${tenantContext.companyId || "none"}:${tenantContext.userId || "unknown"}`;
+}
+
+function readOrganizationsCache(cacheKey) {
+  const cached = organizationsCache.get(cacheKey);
+  if (!cached) {
+    return null;
+  }
+
+  if (cached.expiresAt <= Date.now()) {
+    organizationsCache.delete(cacheKey);
+    return null;
+  }
+
+  return cached.promise;
+}
+
+function writeOrganizationsCache(cacheKey, promise) {
+  organizationsCache.set(cacheKey, {
+    expiresAt: Date.now() + ORGANIZATIONS_CACHE_TTL_MS,
+    promise,
+  });
+}
+
+function clearOrganizationsCache() {
+  organizationsCache.clear();
 }
 
 function byId(items = []) {
@@ -219,55 +257,72 @@ function catalogView(item = {}, values = []) {
 export async function fetchOrganizationsFromSupabase() {
   ensureSupabase();
   const tenantContext = await getTenantContext();
-  const [companiesResult, locationsResult, levelsResult, departmentsResult, positionsResult, catalogsResult, valuesResult] = await Promise.all([
-    supabase.from("companies").select("*").order("trade_name", { ascending: true }),
-    supabase.from("locations").select("*").order("name", { ascending: true }),
-    supabase.from("levels").select("*").order("hierarchy_order", { ascending: true }),
-    supabase.from("departments").select("*").order("name", { ascending: true }),
-    supabase.from("positions").select("*").order("name", { ascending: true }),
-    supabase.from("catalogs").select("*").is("archived_at", null).order("name", { ascending: true }),
-    supabase.from("catalog_values").select("*").is("archived_at", null).order("sort_order", { ascending: true }),
-  ]);
-
-  const failure = [companiesResult, locationsResult, levelsResult, departmentsResult, positionsResult, catalogsResult, valuesResult]
-    .find((result) => result.error);
-  if (failure?.error) {
-    throw new Error(failure.error.message || "No se pudo cargar la estructura organizacional.");
+  const cacheKey = getOrganizationsCacheKey(tenantContext);
+  const cached = readOrganizationsCache(cacheKey);
+  if (cached) {
+    return cached;
   }
 
-  const scopedCompaniesRaw = filterByTenantCompany(companiesResult.data || [], tenantContext, "id");
-  const allowedCompanyIds = new Set(scopedCompaniesRaw.map((item) => item.id));
-  const companies = scopedCompaniesRaw.map(companyView);
-  const companiesMap = byId(companies);
-  const scopedLocationsRaw = (locationsResult.data || []).filter((item) => allowedCompanyIds.has(item.company_id));
-  const locations = scopedLocationsRaw.map((item) => locationView(item, companiesMap));
-  const locationsMap = byId(locations);
-  const scopedDepartmentsRaw = (departmentsResult.data || []).filter((item) => allowedCompanyIds.has(item.company_id));
-  const scopedPositionsRaw = (positionsResult.data || []).filter((item) => scopedDepartmentsRaw.some((department) => department.id === item.department_id));
-  const scopedLevelIds = new Set([
-    ...scopedDepartmentsRaw.map((item) => item.level_id).filter(Boolean),
-    ...scopedPositionsRaw.map((item) => item.level_id).filter(Boolean),
-  ]);
-  const scopedLevelsRaw = (levelsResult.data || []).filter((item) => scopedLevelIds.size === 0 || scopedLevelIds.has(item.id));
-  const levelsSeed = byId(scopedLevelsRaw.map((item) => ({ id: item.id, name: item.name || "" })));
-  const levels = scopedLevelsRaw.map((item) => levelView(item, levelsSeed));
-  const levelsMap = byId(levels);
-  const departmentsSeed = byId(scopedDepartmentsRaw.map((item) => ({ id: item.id, name: item.name || "" })));
-  const departments = scopedDepartmentsRaw.map((item) => departmentView(item, companiesMap, levelsMap, locationsMap, departmentsSeed));
-  const departmentsMap = byId(departments);
-  const positionsSeed = byId(scopedPositionsRaw.map((item) => ({ id: item.id, name: item.name || "" })));
-  const positions = scopedPositionsRaw.map((item) => positionView(item, departmentsMap, levelsMap, locationsMap, positionsSeed, companiesMap));
+  const request = (async () => {
+    const [companiesResult, locationsResult, levelsResult, departmentsResult, positionsResult, catalogsResult, valuesResult] = await Promise.all([
+      supabase.from("companies").select("*").order("trade_name", { ascending: true }),
+      supabase.from("locations").select("*").order("name", { ascending: true }),
+      supabase.from("levels").select("*").order("hierarchy_order", { ascending: true }),
+      supabase.from("departments").select("*").order("name", { ascending: true }),
+      supabase.from("positions").select("*").order("name", { ascending: true }),
+      supabase.from("catalogs").select("*").is("archived_at", null).order("name", { ascending: true }),
+      supabase.from("catalog_values").select("*").is("archived_at", null).order("sort_order", { ascending: true }),
+    ]);
 
-  const valuesByCatalog = (valuesResult.data || []).reduce((acc, value) => {
-    const next = acc.get(value.catalog_id) || [];
-    next.push(value);
-    acc.set(value.catalog_id, next);
-    return acc;
-  }, new Map());
+    const failure = [companiesResult, locationsResult, levelsResult, departmentsResult, positionsResult, catalogsResult, valuesResult]
+      .find((result) => result.error);
+    if (failure?.error) {
+      throw new Error(failure.error.message || "No se pudo cargar la estructura organizacional.");
+    }
 
-  const entities = (catalogsResult.data || []).map((item) => catalogView(item, valuesByCatalog.get(item.id) || []));
+    const scopedCompaniesRaw = filterByTenantCompany(companiesResult.data || [], tenantContext, "id");
+    const allowedCompanyIds = new Set(scopedCompaniesRaw.map((item) => item.id));
+    const companies = scopedCompaniesRaw.map(companyView);
+    const companiesMap = byId(companies);
+    const scopedLocationsRaw = (locationsResult.data || []).filter((item) => allowedCompanyIds.has(item.company_id));
+    const locations = scopedLocationsRaw.map((item) => locationView(item, companiesMap));
+    const locationsMap = byId(locations);
+    const scopedDepartmentsRaw = (departmentsResult.data || []).filter((item) => allowedCompanyIds.has(item.company_id));
+    const scopedPositionsRaw = (positionsResult.data || []).filter((item) => scopedDepartmentsRaw.some((department) => department.id === item.department_id));
+    const scopedLevelIds = new Set([
+      ...scopedDepartmentsRaw.map((item) => item.level_id).filter(Boolean),
+      ...scopedPositionsRaw.map((item) => item.level_id).filter(Boolean),
+    ]);
+    const scopedLevelsRaw = (levelsResult.data || []).filter((item) => scopedLevelIds.size === 0 || scopedLevelIds.has(item.id));
+    const levelsSeed = byId(scopedLevelsRaw.map((item) => ({ id: item.id, name: item.name || "" })));
+    const levels = scopedLevelsRaw.map((item) => levelView(item, levelsSeed));
+    const levelsMap = byId(levels);
+    const departmentsSeed = byId(scopedDepartmentsRaw.map((item) => ({ id: item.id, name: item.name || "" })));
+    const departments = scopedDepartmentsRaw.map((item) => departmentView(item, companiesMap, levelsMap, locationsMap, departmentsSeed));
+    const departmentsMap = byId(departments);
+    const positionsSeed = byId(scopedPositionsRaw.map((item) => ({ id: item.id, name: item.name || "" })));
+    const positions = scopedPositionsRaw.map((item) => positionView(item, departmentsMap, levelsMap, locationsMap, positionsSeed, companiesMap));
 
-  return { companies, locations, levels, departments, positions, entities };
+    const valuesByCatalog = (valuesResult.data || []).reduce((acc, value) => {
+      const next = acc.get(value.catalog_id) || [];
+      next.push(value);
+      acc.set(value.catalog_id, next);
+      return acc;
+    }, new Map());
+
+    const entities = (catalogsResult.data || []).map((item) => catalogView(item, valuesByCatalog.get(item.id) || []));
+
+    return { companies, locations, levels, departments, positions, entities };
+  })();
+
+  writeOrganizationsCache(cacheKey, request);
+
+  try {
+    return await request;
+  } catch (error) {
+    organizationsCache.delete(cacheKey);
+    throw error;
+  }
 }
 
 function employeeView(employee = {}, maps) {
@@ -562,28 +617,52 @@ export async function approveEmployeeRequestInSupabase(requestId) {
 
 function normalizeRecruitmentRequestStatusFromDb(status = "") {
   const value = String(status || "").trim().toLowerCase();
-  if (["approved", "open"].includes(value)) {
-    return "in_progress";
+  if (value === "draft") {
+    return "draft";
   }
-  if (["closed", "cancelled", "rejected"].includes(value)) {
-    return "closed";
+  if (value === "submitted" || value === "open") {
+    return "submitted";
   }
-  if (value === "approved_ready") {
+  if (value === "pending_review" || value === "in_progress") {
+    return "pending_review";
+  }
+  if (value === "on_hold" || value === "paused") {
+    return "on_hold";
+  }
+  if (value === "approved" || value === "approved_ready") {
     return "approved";
   }
-  return "open";
+  if (value === "rejected") {
+    return "rejected";
+  }
+  if (value === "closed" || value === "cancelled") {
+    return "closed";
+  }
+  return "draft";
 }
 
 function normalizeRecruitmentRequestStatusToDb(status = "") {
   const value = String(status || "").trim().toLowerCase();
+  if (value === "draft") {
+    return "draft";
+  }
+  if (value === "submitted") {
+    return "submitted";
+  }
+  if (value === "pending_review" || value === "in_progress") {
+    return "pending_review";
+  }
+  if (value === "on_hold") {
+    return "on_hold";
+  }
   if (value === "closed") {
     return "closed";
   }
   if (value === "approved") {
     return "approved";
   }
-  if (value === "in_progress") {
-    return "open";
+  if (value === "rejected") {
+    return "rejected";
   }
   return "submitted";
 }
@@ -1024,6 +1103,7 @@ async function syncCatalogValues(catalogId, values = []) {
 
 export async function saveOrganizationItemInSupabase(type, item = {}) {
   ensureSupabase();
+  clearOrganizationsCache();
   const tenantContext = await getTenantContext();
   const organizations = await fetchOrganizationsFromSupabase();
 
@@ -1061,6 +1141,7 @@ export async function saveOrganizationItemInSupabase(type, item = {}) {
 
 export async function deleteOrganizationItemInSupabase(type, itemId) {
   ensureSupabase();
+  clearOrganizationsCache();
   const organizations = await fetchOrganizationsFromSupabase();
 
   const tenantContext = await getTenantContext();

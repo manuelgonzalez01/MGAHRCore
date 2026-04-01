@@ -1,9 +1,16 @@
 import { hasSupabaseConfig } from "../../../services/supabase/client";
 import {
+  invalidateCachedResource,
+  invalidateCachedResourcesByPrefix,
+  loadCachedResource,
+} from "../../../utils/resourceCache";
+import {
   deleteOrganizationItemInSupabase,
   fetchOrganizationsFromSupabase,
   saveOrganizationItemInSupabase,
 } from "../../../services/supabase/mgahrcore.repository";
+
+const ADMIN_CACHE_TTL_MS = 20_000;
 
 const STORAGE_KEYS = {
   users: "mgahrcore.administration.users",
@@ -1363,12 +1370,22 @@ export async function deleteRole(roleId) {
 }
 
 export async function getApprovalFlows() {
-  return getStoredApprovalFlows().map(normalizeApprovalFlow);
+  return loadCachedResource(
+    "administration:approvalFlows",
+    async () => getStoredApprovalFlows().map(normalizeApprovalFlow),
+    ADMIN_CACHE_TTL_MS,
+  );
 }
 
 export async function getApprovalQueue() {
-  const flows = getStoredApprovalFlows().map(normalizeApprovalFlow);
-  return getStoredApprovalQueue().map((item) => normalizeApprovalQueueItem(item, flows));
+  return loadCachedResource(
+    "administration:approvalQueue",
+    async () => {
+      const flows = getStoredApprovalFlows().map(normalizeApprovalFlow);
+      return getStoredApprovalQueue().map((item) => normalizeApprovalQueueItem(item, flows));
+    },
+    ADMIN_CACHE_TTL_MS,
+  );
 }
 
 export async function saveApprovalFlow(flow) {
@@ -1383,6 +1400,9 @@ export async function saveApprovalFlow(flow) {
   }
 
   writeCollection(STORAGE_KEYS.approvalFlows, flows);
+  invalidateCachedResource("administration:approvalFlows");
+  invalidateCachedResource("administration:approvalQueue");
+  invalidateCachedResource("administration:core");
   return createOperationResult(true, { data: payload });
 }
 
@@ -1398,6 +1418,9 @@ export async function deleteApprovalFlow(flowId) {
 
   const flows = getStoredApprovalFlows().filter((item) => item.id !== flowId);
   writeCollection(STORAGE_KEYS.approvalFlows, flows);
+  invalidateCachedResource("administration:approvalFlows");
+  invalidateCachedResource("administration:approvalQueue");
+  invalidateCachedResource("administration:core");
   return createOperationResult(true, { data: flows });
 }
 
@@ -1440,22 +1463,41 @@ export async function updateApprovalRequestStatus(requestId, status) {
   }
 
   writeCollection(STORAGE_KEYS.approvalQueue, queue);
+  invalidateCachedResource("administration:approvalQueue");
+  invalidateCachedResource("administration:core");
   return createOperationResult(true, { data: queue[index] });
 }
 
 export async function getAuditFeed() {
-  return [...getStoredSettingsAudit(), ...auditFeed]
-    .sort((left, right) => new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime());
+  return loadCachedResource(
+    "administration:auditFeed",
+    async () =>
+      [...getStoredSettingsAudit(), ...auditFeed]
+        .sort((left, right) => new Date(right.timestamp).getTime() - new Date(left.timestamp).getTime()),
+    ADMIN_CACHE_TTL_MS,
+  );
 }
 
 export async function getHealthChecks() {
-  const settings = await getSettings();
-  return [...buildDynamicHealthChecks(settings), ...healthChecks];
+  return loadCachedResource(
+    "administration:healthChecks",
+    async () => {
+      const settings = await getSettings();
+      return [...buildDynamicHealthChecks(settings), ...healthChecks];
+    },
+    ADMIN_CACHE_TTL_MS,
+  );
 }
 
 export async function getSettings() {
-  const companies = readCollection(STORAGE_KEYS.companies, emptyCollections.companies);
-  return normalizeSettings(readCollection(STORAGE_KEYS.settings, defaultSettings), companies);
+  return loadCachedResource(
+    "administration:settings",
+    async () => {
+      const companies = readCollection(STORAGE_KEYS.companies, emptyCollections.companies);
+      return normalizeSettings(readCollection(STORAGE_KEYS.settings, defaultSettings), companies);
+    },
+    ADMIN_CACHE_TTL_MS,
+  );
 }
 
 export async function saveSettings(settings) {
@@ -1476,25 +1518,39 @@ export async function saveSettings(settings) {
   if (auditEntries.length) {
     writeCollection(STORAGE_KEYS.settingsAudit, [...auditEntries, ...getStoredSettingsAudit()].slice(0, 30));
   }
+  invalidateCachedResource("administration:settings");
+  invalidateCachedResource("administration:auditFeed");
+  invalidateCachedResource("administration:healthChecks");
+  invalidateCachedResource("administration:core");
   return next;
 }
 
 export async function getOrganizations() {
-  if (hasSupabaseConfig) {
-    try {
-      return await fetchOrganizationsFromSupabase();
-    } catch {
-      return hydrateOrganizations(readRawOrganizations());
-    }
-  }
+  return loadCachedResource(
+    "administration:organizations",
+    async () => {
+      if (hasSupabaseConfig) {
+        try {
+          return await fetchOrganizationsFromSupabase();
+        } catch {
+          return hydrateOrganizations(readRawOrganizations());
+        }
+      }
 
-  return hydrateOrganizations(readRawOrganizations());
+      return hydrateOrganizations(readRawOrganizations());
+    },
+    ADMIN_CACHE_TTL_MS,
+  );
 }
 
 export async function saveOrganizationItem(type, item) {
   if (hasSupabaseConfig) {
     try {
       const data = await saveOrganizationItemInSupabase(type, item);
+      invalidateCachedResource("administration:organizations");
+      invalidateCachedResource("administration:settings");
+      invalidateCachedResource("administration:healthChecks");
+      invalidateCachedResource("administration:core");
       return createOperationResult(true, { data });
     } catch (error) {
       return createOperationResult(false, { error: error.message || "No se pudo guardar el registro." });
@@ -1557,6 +1613,10 @@ export async function saveOrganizationItem(type, item) {
   }
 
   writeCollection(storageKey, items);
+  invalidateCachedResource("administration:organizations");
+  invalidateCachedResource("administration:settings");
+  invalidateCachedResource("administration:healthChecks");
+  invalidateCachedResource("administration:core");
   return createOperationResult(true, { data: payload });
 }
 
@@ -1564,6 +1624,10 @@ export async function deleteOrganizationItem(type, itemId) {
   if (hasSupabaseConfig) {
     try {
       await deleteOrganizationItemInSupabase(type, itemId);
+      invalidateCachedResource("administration:organizations");
+      invalidateCachedResource("administration:settings");
+      invalidateCachedResource("administration:healthChecks");
+      invalidateCachedResource("administration:core");
       return createOperationResult(true, { data: true });
     } catch (error) {
       return createOperationResult(false, { error: error.message || "No se pudo eliminar el registro." });
@@ -1585,29 +1649,39 @@ export async function deleteOrganizationItem(type, itemId) {
 
   const items = readCollection(storageKey, []).filter((item) => item.id !== itemId);
   writeCollection(storageKey, items);
+  invalidateCachedResource("administration:organizations");
+  invalidateCachedResource("administration:settings");
+  invalidateCachedResource("administration:healthChecks");
+  invalidateCachedResource("administration:core");
   return createOperationResult(true, { data: items });
 }
 
 export async function getAdministrationCore() {
-  const [users, settings, organizations, roleData, dynamicAuditFeed, dynamicHealthChecks] = await Promise.all([
-    getUsers(),
-    getSettings(),
-    getOrganizations(),
-    getRoles(),
-    getAuditFeed(),
-    getHealthChecks(),
-  ]);
+  return loadCachedResource(
+    "administration:core",
+    async () => {
+      const [users, settings, organizations, roleData, dynamicAuditFeed, dynamicHealthChecks] = await Promise.all([
+        getUsers(),
+        getSettings(),
+        getOrganizations(),
+        getRoles(),
+        getAuditFeed(),
+        getHealthChecks(),
+      ]);
 
-  return {
-    users,
-    roles: roleData,
-    approvalFlows: await getApprovalFlows(),
-    approvalQueue: await getApprovalQueue(),
-    settings,
-    organizations,
-    auditFeed: dynamicAuditFeed,
-    healthChecks: dynamicHealthChecks,
-  };
+      return {
+        users,
+        roles: roleData,
+        approvalFlows: await getApprovalFlows(),
+        approvalQueue: await getApprovalQueue(),
+        settings,
+        organizations,
+        auditFeed: dynamicAuditFeed,
+        healthChecks: dynamicHealthChecks,
+      };
+    },
+    ADMIN_CACHE_TTL_MS,
+  );
 }
 
 export async function loadAdministrationDevelopmentSeed() {
@@ -1629,6 +1703,7 @@ export async function loadAdministrationDevelopmentSeed() {
   writeCollection(STORAGE_KEYS.settings, normalizeSettings(defaultSettings, seedOrganizations.companies));
   writeCollection(STORAGE_KEYS.settingsAudit, []);
   window.localStorage.setItem(STORAGE_KEYS.demoSeed, "true");
+  invalidateCachedResourcesByPrefix("administration:");
   return getAdministrationCore();
 }
 
@@ -1650,6 +1725,7 @@ export async function clearAdministrationDevelopmentSeed() {
   writeCollection(STORAGE_KEYS.settings, normalizeSettings(defaultSettings, []));
   writeCollection(STORAGE_KEYS.settingsAudit, []);
   window.localStorage.removeItem(STORAGE_KEYS.demoSeed);
+  invalidateCachedResourcesByPrefix("administration:");
   return getAdministrationCore();
 }
 

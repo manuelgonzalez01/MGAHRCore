@@ -9,6 +9,11 @@ import {
   fetchEmployeesFromSupabase,
   saveEmployeeInSupabase,
 } from "../../../services/supabase/mgahrcore.repository";
+import {
+  invalidateCachedResource,
+  invalidateCachedResourcesByPrefix,
+  loadCachedResource,
+} from "../../../utils/resourceCache";
 import { getInitials } from "../utils/employee.helpers";
 import compensationSchema from "../schemas/compensation.schema";
 import contractSchema from "../schemas/contract.schema";
@@ -18,6 +23,7 @@ const EMPLOYEES_KEY = "mgahrcore.employees.records";
 const REQUESTS_KEY = "mgahrcore.employees.requests";
 const ACTIVE_EMPLOYEE_KEY = "mgahrcore.employees.activeEmployeeId";
 const DEMO_EMAIL_DOMAIN = "@mgahrcore.demo";
+const EMPLOYEES_CACHE_TTL_MS = 20_000;
 
 function getCurrentLanguage() {
   if (!canUseStorage()) {
@@ -332,15 +338,21 @@ export async function getRecruitmentBridge() {
 }
 
 export async function getEmployees() {
-  if (hasSupabaseConfig) {
-    try {
-      return await fetchEmployeesFromSupabase();
-    } catch {
-      return readEmployeesSync();
-    }
-  }
+  return loadCachedResource(
+    "employees:list",
+    async () => {
+      if (hasSupabaseConfig) {
+        try {
+          return await fetchEmployeesFromSupabase();
+        } catch {
+          return readEmployeesSync();
+        }
+      }
 
-  return readEmployeesSync();
+      return readEmployeesSync();
+    },
+    EMPLOYEES_CACHE_TTL_MS,
+  );
 }
 
 export async function getEmployeeById(id) {
@@ -362,6 +374,7 @@ export async function saveEmployee(employee) {
     try {
       const saved = await saveEmployeeInSupabase(employee);
       setActiveEmployeeId(saved.id);
+      invalidateCachedResourcesByPrefix("employees:");
       return saved;
     } catch {
       // Falls back to local persistence during partial migration or unavailable tables.
@@ -384,20 +397,27 @@ export async function saveEmployee(employee) {
 
   writeCollection(EMPLOYEES_KEY, items);
   setActiveEmployeeId(normalized.id);
+  invalidateCachedResourcesByPrefix("employees:");
   return normalized;
 }
 
 export async function getEmployeeRequests() {
-  if (hasSupabaseConfig) {
-    try {
-      return await fetchEmployeeRequestsFromSupabase();
-    } catch {
-      return readCollection(REQUESTS_KEY).map(normalizeRequest);
-    }
-  }
+  return loadCachedResource(
+    "employees:requests",
+    async () => {
+      if (hasSupabaseConfig) {
+        try {
+          return await fetchEmployeeRequestsFromSupabase();
+        } catch {
+          return readCollection(REQUESTS_KEY).map(normalizeRequest);
+        }
+      }
 
-  purgeDemoEmployeeData();
-  return readCollection(REQUESTS_KEY).map(normalizeRequest);
+      purgeDemoEmployeeData();
+      return readCollection(REQUESTS_KEY).map(normalizeRequest);
+    },
+    EMPLOYEES_CACHE_TTL_MS,
+  );
 }
 
 export async function createEmployeeRequest(request) {
@@ -421,6 +441,8 @@ export async function createEmployeeRequest(request) {
   });
   items.unshift(normalized);
   writeCollection(REQUESTS_KEY, items);
+  invalidateCachedResource("employees:requests");
+  invalidateCachedResource("employees:dashboard");
   return normalized;
 }
 
@@ -429,6 +451,7 @@ export async function approveEmployeeRequest(requestId) {
     try {
       const employee = await approveEmployeeRequestInSupabase(requestId);
       setActiveEmployeeId(employee.id);
+      invalidateCachedResourcesByPrefix("employees:");
       return employee;
     } catch {
       // Falls back to local persistence during partial migration or unavailable tables.
@@ -463,79 +486,86 @@ export async function approveEmployeeRequest(requestId) {
   };
   writeCollection(REQUESTS_KEY, requests);
   setActiveEmployeeId(employee.id);
+  invalidateCachedResourcesByPrefix("employees:");
   return employee;
 }
 
 export async function getEmployeesDashboard() {
-  const [employeesResult, requestsResult, recruitmentBridgeResult] = await Promise.allSettled([
-    getEmployees(),
-    getEmployeeRequests(),
-    getRecruitmentBridge(),
-  ]);
-  const employees = employeesResult.status === "fulfilled" ? employeesResult.value : [];
-  const requests = requestsResult.status === "fulfilled" ? requestsResult.value : [];
-  const recruitmentBridge = recruitmentBridgeResult.status === "fulfilled" ? recruitmentBridgeResult.value : [];
-  const language = getCurrentLanguage();
-  const isEnglish = language === "en";
-  const activeEmployees = employees.filter((item) => item.status === "active");
-  const onLeaveEmployees = employees.filter((item) => item.status === "leave");
-  const recentHires = employees.filter((item) => {
-    if (!item.startDate) {
-      return false;
-    }
+  return loadCachedResource(
+    "employees:dashboard",
+    async () => {
+      const [employeesResult, requestsResult, recruitmentBridgeResult] = await Promise.allSettled([
+        getEmployees(),
+        getEmployeeRequests(),
+        getRecruitmentBridge(),
+      ]);
+      const employees = employeesResult.status === "fulfilled" ? employeesResult.value : [];
+      const requests = requestsResult.status === "fulfilled" ? requestsResult.value : [];
+      const recruitmentBridge = recruitmentBridgeResult.status === "fulfilled" ? recruitmentBridgeResult.value : [];
+      const language = getCurrentLanguage();
+      const isEnglish = language === "en";
+      const activeEmployees = employees.filter((item) => item.status === "active");
+      const onLeaveEmployees = employees.filter((item) => item.status === "leave");
+      const recentHires = employees.filter((item) => {
+        if (!item.startDate) {
+          return false;
+        }
 
-    const startDate = new Date(item.startDate).getTime();
-    return Number.isFinite(startDate) && Date.now() - startDate <= 1000 * 60 * 60 * 24 * 90;
-  });
-  const pendingDocuments = employees.reduce(
-    (acc, item) => acc + item.documents.filter((doc) => doc.status !== "approved").length,
-    0,
-  );
-  const averageProfileCompletion = employees.length
-    ? Math.round(
-        employees.reduce((acc, item) => acc + (Number(item.profileCompletion) || 0), 0) / employees.length,
-      )
-    : 0;
+        const startDate = new Date(item.startDate).getTime();
+        return Number.isFinite(startDate) && Date.now() - startDate <= 1000 * 60 * 60 * 24 * 90;
+      });
+      const pendingDocuments = employees.reduce(
+        (acc, item) => acc + item.documents.filter((doc) => doc.status !== "approved").length,
+        0,
+      );
+      const averageProfileCompletion = employees.length
+        ? Math.round(
+            employees.reduce((acc, item) => acc + (Number(item.profileCompletion) || 0), 0) / employees.length,
+          )
+        : 0;
 
-  return {
-    employees,
-    requests,
-    recruitmentBridge,
-    insights: {
-      activeEmployees: activeEmployees.length,
-      onLeaveEmployees: onLeaveEmployees.length,
-      recentHires: recentHires.length,
-      pendingDocuments,
-      averageProfileCompletion,
-      activeRecruitmentBridge: recruitmentBridge.filter((item) => item.stage !== "offer").length,
+      return {
+        employees,
+        requests,
+        recruitmentBridge,
+        insights: {
+          activeEmployees: activeEmployees.length,
+          onLeaveEmployees: onLeaveEmployees.length,
+          recentHires: recentHires.length,
+          pendingDocuments,
+          averageProfileCompletion,
+          activeRecruitmentBridge: recruitmentBridge.filter((item) => item.stage !== "offer").length,
+        },
+        stats: [
+          {
+            key: "headcount",
+            label: "Headcount",
+            value: employees.length,
+            trend: isEnglish ? `${activeEmployees.length} active in structure` : `${activeEmployees.length} activos en estructura`,
+          },
+          {
+            key: "approvals",
+            label: isEnglish ? "Pending hires" : "Altas por aprobar",
+            value: requests.filter((item) => item.approvalStatus === "pending").length,
+            trend: isEnglish ? "active approval flow" : "flujo de autorizacion vigente",
+          },
+          {
+            key: "documents",
+            label: isEnglish ? "Pending docs" : "Docs pendientes",
+            value: pendingDocuments,
+            trend: isEnglish ? `${averageProfileCompletion}% average completion` : `${averageProfileCompletion}% promedio de completitud`,
+          },
+          {
+            key: "recruitment",
+            label: isEnglish ? "Recruitment bridge" : "Puente Recruitment",
+            value: recruitmentBridge.length,
+            trend: isEnglish ? `${recentHires.length} recent hires` : `${recentHires.length} ingresos recientes`,
+          },
+        ],
+      };
     },
-    stats: [
-      {
-        key: "headcount",
-        label: "Headcount",
-        value: employees.length,
-        trend: isEnglish ? `${activeEmployees.length} active in structure` : `${activeEmployees.length} activos en estructura`,
-      },
-      {
-        key: "approvals",
-        label: isEnglish ? "Pending hires" : "Altas por aprobar",
-        value: requests.filter((item) => item.approvalStatus === "pending").length,
-        trend: isEnglish ? "active approval flow" : "flujo de autorizacion vigente",
-      },
-      {
-        key: "documents",
-        label: isEnglish ? "Pending docs" : "Docs pendientes",
-        value: pendingDocuments,
-        trend: isEnglish ? `${averageProfileCompletion}% average completion` : `${averageProfileCompletion}% promedio de completitud`,
-      },
-      {
-        key: "recruitment",
-        label: isEnglish ? "Recruitment bridge" : "Puente Recruitment",
-        value: recruitmentBridge.length,
-        trend: isEnglish ? `${recentHires.length} recent hires` : `${recentHires.length} ingresos recientes`,
-      },
-    ],
-  };
+    EMPLOYEES_CACHE_TTL_MS,
+  );
 }
 
 export async function loadEmployeesDevelopmentSeed() {
@@ -550,6 +580,7 @@ export async function clearEmployeesDevelopmentSeed() {
   writeCollection(EMPLOYEES_KEY, []);
   writeCollection(REQUESTS_KEY, []);
   window.localStorage.removeItem(ACTIVE_EMPLOYEE_KEY);
+  invalidateCachedResourcesByPrefix("employees:");
   return getEmployeesDashboard();
 }
 

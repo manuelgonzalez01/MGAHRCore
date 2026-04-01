@@ -1,5 +1,9 @@
 import { hasSupabaseConfig } from "../../../services/supabase/client";
 import {
+  invalidateCachedResourcesByPrefix,
+  loadCachedResource,
+} from "../../../utils/resourceCache";
+import {
   createRecruitmentCandidateInSupabase,
   createRecruitmentJobRequestInSupabase,
   fetchRecruitmentCandidatesFromSupabase,
@@ -12,6 +16,7 @@ const STORAGE_KEYS = {
   interviews: "mgahrcore.recruitment.interviews",
   evaluations: "mgahrcore.recruitment.evaluations",
 };
+const RECRUITMENT_CACHE_TTL_MS = 20_000;
 
 function canUseStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
@@ -115,6 +120,18 @@ function getPositionContext(payload = {}, organizations = readOrganizations()) {
   };
 }
 
+function normalizeLegacyRequestStatus(status) {
+  if (status === "open") {
+    return "submitted";
+  }
+
+  if (status === "in_progress") {
+    return "pending_review";
+  }
+
+  return status || "draft";
+}
+
 function buildSeedJobRequests() {
   const organizations = readOrganizations();
   const positions = organizations.positions.filter((item) => item.useInRecruitment !== false).slice(0, 4);
@@ -130,7 +147,7 @@ function buildSeedJobRequests() {
     const company = organizations.companies.find((item) => item.id === position.companyId)
       || organizations.companies.find((item) => item.id === department?.companyId);
     const level = organizations.levels.find((item) => item.id === position.levelId);
-    const status = ["open", "in_progress", "approved", "open"][index] || "open";
+    const status = ["submitted", "pending_review", "approved", "on_hold"][index] || "submitted";
     const priority = ["high", "medium", "high", "low"][index] || "medium";
     const modality = ["hybrid", "onsite", "remote", "hybrid"][index] || "hybrid";
 
@@ -214,7 +231,8 @@ function normalizeJobRequest(item) {
     updatedAt: item.updatedAt || item.createdAt || new Date().toISOString(),
     lastModifiedBy: item.lastModifiedBy || item.requestedBy || getActor(),
     history: Array.isArray(item.history) ? item.history : [],
-    status: item.status || "draft",
+    changeLog: Array.isArray(item.changeLog) ? item.changeLog : [],
+    status: normalizeLegacyRequestStatus(item.status),
     createdAt: item.createdAt || new Date().toISOString(),
   };
 }
@@ -377,45 +395,63 @@ function getLocalRecruitmentDashboardData() {
 }
 
 export async function getRecruitmentDashboardData() {
-  if (hasSupabaseConfig) {
-    try {
-      const [jobRequests, candidates] = await Promise.all([
-        fetchRecruitmentJobRequestsFromSupabase(),
-        fetchRecruitmentCandidatesFromSupabase(),
-      ]);
-      const interviews = getLocalInterviews();
-      const evaluations = getLocalEvaluations();
-      return buildDashboard(jobRequests, candidates, interviews, evaluations);
-    } catch {
-      return getLocalRecruitmentDashboardData();
-    }
-  }
+  return loadCachedResource(
+    "recruitment:dashboard",
+    async () => {
+      if (hasSupabaseConfig) {
+        try {
+          const [jobRequests, candidates] = await Promise.all([
+            fetchRecruitmentJobRequestsFromSupabase(),
+            fetchRecruitmentCandidatesFromSupabase(),
+          ]);
+          const interviews = getLocalInterviews();
+          const evaluations = getLocalEvaluations();
+          return buildDashboard(jobRequests, candidates, interviews, evaluations);
+        } catch {
+          return getLocalRecruitmentDashboardData();
+        }
+      }
 
-  return getLocalRecruitmentDashboardData();
+      return getLocalRecruitmentDashboardData();
+    },
+    RECRUITMENT_CACHE_TTL_MS,
+  );
 }
 
 export async function getJobRequests() {
-  if (hasSupabaseConfig) {
-    try {
-      return await fetchRecruitmentJobRequestsFromSupabase();
-    } catch {
-      return getLocalJobRequests();
-    }
-  }
+  return loadCachedResource(
+    "recruitment:jobRequests",
+    async () => {
+      if (hasSupabaseConfig) {
+        try {
+          return await fetchRecruitmentJobRequestsFromSupabase();
+        } catch {
+          return getLocalJobRequests();
+        }
+      }
 
-  return getLocalJobRequests();
+      return getLocalJobRequests();
+    },
+    RECRUITMENT_CACHE_TTL_MS,
+  );
 }
 
 export async function getCandidates() {
-  if (hasSupabaseConfig) {
-    try {
-      return await fetchRecruitmentCandidatesFromSupabase();
-    } catch {
-      return getLocalCandidates();
-    }
-  }
+  return loadCachedResource(
+    "recruitment:candidates",
+    async () => {
+      if (hasSupabaseConfig) {
+        try {
+          return await fetchRecruitmentCandidatesFromSupabase();
+        } catch {
+          return getLocalCandidates();
+        }
+      }
 
-  return getLocalCandidates();
+      return getLocalCandidates();
+    },
+    RECRUITMENT_CACHE_TTL_MS,
+  );
 }
 
 export async function getInterviews() {
@@ -435,6 +471,7 @@ async function createLocalJobRequest(payload = {}) {
     requestedBy: getActor(),
   });
   writeCollection(STORAGE_KEYS.jobRequests, [nextItem, ...items]);
+  invalidateCachedResourcesByPrefix("recruitment:");
   return nextItem;
 }
 
@@ -450,6 +487,7 @@ async function updateLocalJobRequest(payload = {}) {
       : item
   ));
   writeCollection(STORAGE_KEYS.jobRequests, nextItems);
+  invalidateCachedResourcesByPrefix("recruitment:");
   return nextItems.find((item) => item.id === payload.id) || null;
 }
 
@@ -461,6 +499,7 @@ async function createLocalCandidate(payload = {}) {
     createdAt: new Date().toISOString(),
   });
   writeCollection(STORAGE_KEYS.candidates, [nextItem, ...items]);
+  invalidateCachedResourcesByPrefix("recruitment:");
   return nextItem;
 }
 
@@ -472,6 +511,7 @@ async function createLocalInterview(payload = {}) {
     createdAt: new Date().toISOString(),
   });
   writeCollection(STORAGE_KEYS.interviews, [nextItem, ...items]);
+  invalidateCachedResourcesByPrefix("recruitment:");
   return nextItem;
 }
 
@@ -483,6 +523,7 @@ async function createLocalEvaluation(payload = {}) {
     createdAt: new Date().toISOString(),
   });
   writeCollection(STORAGE_KEYS.evaluations, [nextItem, ...items]);
+  invalidateCachedResourcesByPrefix("recruitment:");
   return nextItem;
 }
 
@@ -490,6 +531,7 @@ export async function createJobRequest(payload = {}) {
   if (hasSupabaseConfig) {
     try {
       await createRecruitmentJobRequestInSupabase(payload);
+      invalidateCachedResourcesByPrefix("recruitment:");
       const requests = await fetchRecruitmentJobRequestsFromSupabase();
       return requests[0] || null;
     } catch {
@@ -512,6 +554,7 @@ export async function createCandidate(payload = {}) {
   if (hasSupabaseConfig) {
     try {
       await createRecruitmentCandidateInSupabase(payload);
+      invalidateCachedResourcesByPrefix("recruitment:");
       const candidates = await fetchRecruitmentCandidatesFromSupabase();
       return candidates[0] || null;
     } catch {
@@ -651,6 +694,7 @@ export const recruitmentCopy = {
         approved: "Aprobada",
         rejected: "Rechazada",
         closed: "Cerrada",
+        on_hold: "En pausa",
         active: "Activo",
         pipeline: "Pipeline",
         finalist: "Finalista",
@@ -812,6 +856,7 @@ export const recruitmentCopy = {
         approved: "Approved",
         rejected: "Rejected",
         closed: "Closed",
+        on_hold: "On hold",
         active: "Active",
         pipeline: "Pipeline",
         finalist: "Finalist",

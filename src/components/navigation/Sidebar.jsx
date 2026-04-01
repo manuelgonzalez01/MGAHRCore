@@ -167,29 +167,19 @@ export default function Sidebar() {
                       expandedMenu === item.key || isGroupActive ? " is-active" : ""
                     }`}
                   >
-                    {isDesktop ? (
-                      <NavLink
-                        to={item.path}
-                        className="sidebar-trigger__label"
-                        onClick={closeMobileMenu}
-                      >
-                        {t(item.labelKey)}
-                      </NavLink>
-                    ) : (
-                      <button
-                        type="button"
-                        className="sidebar-trigger__label sidebar-trigger__label--button"
-                        aria-expanded={expandedMenu === item.key ? "true" : "false"}
-                        aria-label={
-                          expandedMenu === item.key
-                            ? t("Ocultar vistas del modulo", "Collapse module views")
-                            : t("Mostrar vistas del modulo", "Expand module views")
-                        }
-                        onClick={() => toggleMenu(item.key)}
-                      >
-                        {t(item.labelKey)}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      className="sidebar-trigger__label sidebar-trigger__label--button"
+                      aria-expanded={expandedMenu === item.key ? "true" : "false"}
+                      aria-label={
+                        expandedMenu === item.key
+                          ? t("Ocultar vistas del modulo", "Collapse module views")
+                          : t("Mostrar vistas del modulo", "Expand module views")
+                      }
+                      onClick={() => toggleMenu(item.key)}
+                    >
+                      {t(item.labelKey)}
+                    </button>
                   </div>
                 ) : (
                   <NavLink

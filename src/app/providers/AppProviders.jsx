@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import I18nProvider from "./I18nProvider";
 import useAuthStore from "../store/authStore";
-import authService from "../../services/auth/auth.service";
-import platformService from "../../services/platform/platform.service";
 
 const LANGUAGE_KEY = "mgahrcore.language";
 const ADMIN_SETTINGS_KEY = "mgahrcore.administration.settings";
@@ -28,8 +26,8 @@ function getBootstrapLanguage() {
 
 export default function AppProviders({ children }) {
   const hydrateAuth = useAuthStore((state) => state.hydrate);
+  const markBootstrapped = useAuthStore((state) => state.markBootstrapped);
   const logoutAuth = useAuthStore((state) => state.logout);
-  const [ready, setReady] = useState(() => useAuthStore.getState().isAuthenticated || platformService.isPlatformReady());
   const [language, setLanguage] = useState(getBootstrapLanguage);
   const [bootstrapError, setBootstrapError] = useState("");
 
@@ -37,6 +35,11 @@ export default function AppProviders({ children }) {
     let ignore = false;
 
     async function bootstrap() {
+      const [{ default: authService }, { default: platformService }] = await Promise.all([
+        import("../../services/auth/auth.service"),
+        import("../../services/platform/platform.service"),
+      ]);
+
       try {
         await platformService.initializePlatform();
       } catch (error) {
@@ -66,7 +69,7 @@ export default function AppProviders({ children }) {
         }
       } finally {
         if (!ignore) {
-          setReady(true);
+          markBootstrapped();
         }
       }
     }
@@ -100,7 +103,7 @@ export default function AppProviders({ children }) {
       ignore = true;
       unsubscribe?.();
     };
-  }, [hydrateAuth, language, logoutAuth]);
+  }, [hydrateAuth, language, logoutAuth, markBootstrapped]);
 
   useEffect(() => {
     setLanguage(getBootstrapLanguage());
@@ -108,26 +111,29 @@ export default function AppProviders({ children }) {
 
   return (
     <I18nProvider>
-      {ready ? (
-        children
-      ) : (
-        <div className="platform-loader">
-          <div className="platform-loader__panel">
-            <span className="platform-loader__eyebrow">MGAHRCore</span>
-            <h1>
-              {language === "en"
-                ? "Preparing the corporate workspace"
-                : "Preparando el workspace corporativo"}
-            </h1>
-            <p>
-              {bootstrapError
-                || (language === "en"
-                  ? "We are loading configuration, organizational structure, and operating data for a complete experience."
-                  : "Estamos cargando configuracion, estructura organizacional y datos operativos para una experiencia completa.")}
-            </p>
-          </div>
+      {children}
+      {bootstrapError ? (
+        <div
+          className="platform-bootstrap-status"
+          role="status"
+          aria-live="polite"
+          style={{
+            position: "fixed",
+            right: "1rem",
+            bottom: "1rem",
+            maxWidth: "24rem",
+            padding: "0.875rem 1rem",
+            borderRadius: "0.9rem",
+            background: "rgba(28, 34, 52, 0.94)",
+            color: "#f5f7fb",
+            boxShadow: "0 18px 40px rgba(8, 12, 20, 0.25)",
+            zIndex: 2000,
+            fontSize: "0.92rem",
+          }}
+        >
+          {bootstrapError}
         </div>
-      )}
+      ) : null}
     </I18nProvider>
   );
 }
